@@ -50,4 +50,132 @@
 
 <script>
     const prices = {
-        wonwoo: { w_p: 100, w_m: 50, w_s: 100, w_l: 500, i_p: 100, i_s: 1
+        wonwoo: { w_p: 100, w_m: 50, w_s: 100, w_l: 500, i_p: 100, i_s: 100, i_photo: 100, i_live: 500 },
+        others: { w_p: 50, w_m: 10, w_s: 20, w_l: 100, i_p: 50, i_s: 20, i_live: 100 }
+    };
+
+    const members = [
+        {en:"S.coups", ko:"승철", vip:false}, {en:"Jeonghan", ko:"정한", vip:false},
+        {en:"Joshua", ko:"지수", vip:false}, {en:"Jun", ko:"준휘", vip:false},
+        {en:"Hoshi", ko:"순영", vip:false}, {en:"Wonwoo", ko:"원우", vip:true},
+        {en:"Woozi", ko:"지훈", vip:false}, {en:"The8", ko:"명호", vip:false},
+        {en:"Mingyu", ko:"민규", vip:false}, {en:"DK", ko:"석민", vip:false},
+        {en:"Seungkwan", ko:"승관", vip:false}, {en:"Vernon", ko:"한솔", vip:false},
+        {en:"Dino", ko:"찬", vip:false}
+    ];
+
+    function getToday() {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    let state = { total: 0, currentDate: getToday(), allLogs: {} };
+
+    function save() {
+        localStorage.setItem('SVT_FINAL_STABLE_V1', JSON.stringify(state));
+        updateUI();
+    }
+
+    function updateUI() {
+        document.getElementById('totalDisplay').innerText = state.total.toLocaleString();
+        document.getElementById('dateInput').value = state.currentDate;
+        renderLogs();
+    }
+
+    function add(name, act, amt) {
+        state.total += amt;
+        const dk = state.currentDate;
+        if (!state.allLogs[dk]) state.allLogs[dk] = [];
+        state.allLogs[dk].push({ id: Date.now(), amt: amt, text: `${name} ${act}` });
+        save();
+    }
+
+    function undo(id) {
+        const dk = state.currentDate;
+        const logs = state.allLogs[dk];
+        const idx = logs.findIndex(l => l.id === id);
+        if(idx !== -1) {
+            state.total -= logs[idx].amt;
+            logs.splice(idx, 1);
+            save();
+        }
+    }
+
+    function renderLogs() {
+        const div = document.getElementById('logList');
+        const logs = state.allLogs[state.currentDate] || [];
+        if(logs.length === 0) { div.innerHTML = '<div style="color:#aaa;text-align:center;">這天尚未有紀錄</div>'; return; }
+        div.innerHTML = logs.map(l => `
+            <div class="log-item">
+                <span>${l.text} ($${l.amt})</span>
+                <span style="color:#ff7675;font-weight:bold;padding:0 10px" onclick="undo(${l.id})">✖</span>
+            </div>
+        `).reverse().join('');
+    }
+
+    function handleLive(idx, plat) {
+        const m = members[idx];
+        const n = prompt(`【${m.en}】的 ${plat} 直播人數？ (Solo請填 1)`, "1");
+        if(n && !isNaN(n)) {
+            let base = (m.vip ? 500 : 100);
+            let total = parseInt(base) + (parseInt(n)>1 ? (parseInt(n)-1)*50 : 0);
+            add(m.en, `${plat}直播(${n}人)`, total);
+        }
+    }
+
+    function updateDate() {
+        state.currentDate = document.getElementById('dateInput').value;
+        save();
+    }
+
+    function nextDay() {
+        if(!confirm("確定要結束今天，並將日期改為明天嗎？")) return;
+        let d = new Date(state.currentDate);
+        d.setDate(d.getDate() + 1);
+        state.currentDate = d.toISOString().split('T')[0];
+        save();
+        window.scrollTo(0,0);
+    }
+
+    function init() {
+        const saved = localStorage.getItem('SVT_FINAL_STABLE_V1');
+        if(saved) {
+            state = JSON.parse(saved);
+            state.currentDate = getToday();
+        }
+        
+        const list = document.getElementById('memberList');
+        members.forEach((m, i) => {
+            const p = m.vip ? prices.wonwoo : prices.others;
+            const card = document.createElement('div');
+            card.className = 'member-card';
+            
+            let btns = `
+                <button onclick="add('${m.en}','WVS發文',${p.w_p})">WVS發文</button>
+                <button onclick="add('${m.en}','WVS留言',${p.w_m})">WVS留言</button>
+                <button onclick="add('${m.en}','WVS限動',${p.w_s})">WVS限動</button>
+                <button class="btn-live" onclick="handleLive(${i},'WVS')">WVS直播</button>
+                <button onclick="add('${m.en}','IG發文',${p.i_p})">IG發文</button>
+                <button onclick="add('${m.en}','IG限動',${p.i_s})">IG限動</button>
+                <button class="btn-live" onclick="handleLive(${i},'IG')">IG直播</button>
+            `;
+            if(m.vip) btns += `<button class="btn-photo" onclick="add('${m.en}','IG攝影帳',${p.i_photo})">IG攝影帳</button>`;
+            
+            card.innerHTML = `
+                <div class="member-name">
+                    ${m.en} <span style="font-size:14px; color:#888; font-weight:normal">${m.ko}</span>
+                    ${m.vip?'<span style="color:var(--rose)">💜</span>':''}
+                </div>
+                <div class="btn-grid">${btns}</div>
+            `;
+            list.appendChild(card);
+        });
+        updateUI();
+    }
+    init();
+</script>
+</body>
+</html>
