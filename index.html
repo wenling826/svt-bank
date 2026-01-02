@@ -105,15 +105,30 @@
     }
 
     function renderLogs() {
-        const div = document.getElementById('logList');
-        const logs = state.allLogs[state.currentDate] || [];
-        if(logs.length === 0) { div.innerHTML = '<div style="color:#aaa;text-align:center;">這天尚未有紀錄</div>'; return; }
-        div.innerHTML = logs.map(l => `
-            <div class="log-item">
-                <span>${l.text} ($${l.amt})</span>
-                <span style="color:#ff7675;font-weight:bold;padding:0 10px" onclick="undo(${l.id})">✖</span>
-            </div>
-        `).reverse().join('');
+    const div = document.getElementById('logList');
+    const logs = state.allLogs[state.currentDate] || [];
+    
+    // 1. 計算該日總和 (這裡會去抓妳手機裡已經存好的資料)
+    const dayTotal = logs.reduce((sum, log) => sum + log.amt, 0);
+    
+    // 2. 準備總和顯示的 HTML (粉色漂亮的小標籤)
+    const totalHtml = dayTotal > 0 ? 
+        `<div style="background:linear-gradient(135deg, var(--rose), var(--serenity)); color:white; padding:10px 20px; border-radius:25px; display:inline-block; margin-bottom:15px; font-weight:bold; box-shadow:0 4px 10px rgba(0,0,0,0.1);">💰 本日總計：NT$ ${dayTotal.toLocaleString()}</div>` : '';
+
+    // 3. 如果沒紀錄就顯示「尚未有紀錄」
+    if(logs.length === 0) { 
+        div.innerHTML = '<div style="color:#aaa;text-align:center;padding:20px;">這天尚未有紀錄</div>'; 
+        return; 
+    }
+
+    // 4. 把總和跟原本的紀錄清單結合起來顯示
+    div.innerHTML = totalHtml + logs.map(l => `
+        <div class="log-item">
+            <span>${l.text} ($${l.amt})</span>
+            <span style="color:#ff7675;font-weight:bold;padding:0 10px;cursor:pointer;" onclick="undo(${l.id})">✖</span>
+        </div>
+    `).reverse().join('');
+}
     }
 
     function handleLive(idx, plat) {
