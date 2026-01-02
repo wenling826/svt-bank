@@ -12,7 +12,7 @@
         h1 { margin: 0; font-size: 20px; letter-spacing: 1px; }
         .total-box { background: white; padding: 15px; margin: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 2px solid var(--rose); }
         #dateInput { border: 1px solid #ddd; padding: 8px; border-radius: 8px; font-size: 16px; color: #555; outline: none; }
-        .total-amount { color: #e84393; font-size: 24px; font-weight: bold; }
+        .total-amount { color: #e84393; font-size: 22px; font-weight: bold; }
         .member-card { background: white; margin: 12px; padding: 15px; border-radius: 15px; border: 1px solid #eee; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .member-name { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #333; display: flex; align-items: center; gap: 8px; }
         .btn-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
@@ -21,9 +21,9 @@
         .btn-live { background-color: #fff9db; border-color: #f1c40f; color: #d35400; font-weight: bold; }
         .btn-photo { background-color: #f5f6fa; border-color: var(--purple); color: var(--purple); font-weight: bold; }
         .log-area { margin: 15px; background: #f8f9fa; padding: 15px; border-radius: 12px; min-height: 80px; }
-        .log-header { font-weight: bold; margin-bottom: 10px; color: #666; font-size: 14px; display: flex; align-items: center; gap: 5px; }
-        .log-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #ddd; font-size: 14px; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .log-header { font-weight: bold; margin-bottom: 10px; color: #666; font-size: 15px; }
+        .day-total-tag { background: linear-gradient(135deg, var(--rose), var(--serenity)); color: white; padding: 10px 20px; border-radius: 25px; display: inline-block; margin-bottom: 15px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .log-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #ddd; font-size: 14px; }
         .footer { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.95); padding: 15px 20px 30px 20px; text-align: center; border-top: 1px solid #eee; backdrop-filter: blur(10px); }
         .next-btn { background: var(--rose); color: white; border: none; padding: 14px; border-radius: 30px; width: 90%; font-size: 16px; font-weight: bold; box-shadow: 0 4px 15px rgba(247,202,201,0.6); }
     </style>
@@ -34,7 +34,7 @@
 
 <div class="total-box">
     <input type="date" id="dateInput" onchange="updateDate()">
-    <div class="total-amount">NT$ <span id="totalDisplay">0</span></div>
+    <div class="total-amount">總額 NT$ <span id="totalDisplay">0</span></div>
 </div>
 
 <div id="memberList"></div>
@@ -59,19 +59,17 @@
         {en:"Joshua", ko:"지수", vip:false}, {en:"Jun", ko:"준휘", vip:false},
         {en:"Hoshi", ko:"순영", vip:false}, {en:"Wonwoo", ko:"원우", vip:true},
         {en:"Woozi", ko:"지훈", vip:false}, {en:"The8", ko:"명호", vip:false},
-        {en:"Mingyu", ko:"민규", vip:false}, {en:"DK", ko:"석민", vip:false},
+        {en:"Mingyu", ko:"민규", vip:false}, {en:"DK", ko:"석敏", vip:false},
         {en:"Seungkwan", ko:"승관", vip:false}, {en:"Vernon", ko:"한솔", vip:false},
         {en:"Dino", ko:"찬", vip:false}
     ];
 
     function getToday() {
         const now = new Date();
-        const y = now.getFullYear();
-        const m = String(now.getMonth() + 1).padStart(2, '0');
-        const d = String(now.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     }
 
+    // 初始狀態讀取
     let state = { total: 0, currentDate: getToday(), allLogs: {} };
 
     function save() {
@@ -105,35 +103,28 @@
     }
 
     function renderLogs() {
-    const div = document.getElementById('logList');
-    const logs = state.allLogs[state.currentDate] || [];
-    
-    // 1. 計算該日總和 (這裡會去抓妳手機裡已經存好的資料)
-    const dayTotal = logs.reduce((sum, log) => sum + log.amt, 0);
-    
-    // 2. 準備總和顯示的 HTML (粉色漂亮的小標籤)
-    const totalHtml = dayTotal > 0 ? 
-        `<div style="background:linear-gradient(135deg, var(--rose), var(--serenity)); color:white; padding:10px 20px; border-radius:25px; display:inline-block; margin-bottom:15px; font-weight:bold; box-shadow:0 4px 10px rgba(0,0,0,0.1);">💰 本日總計：NT$ ${dayTotal.toLocaleString()}</div>` : '';
+        const div = document.getElementById('logList');
+        const logs = state.allLogs[state.currentDate] || [];
+        const dayTotal = logs.reduce((sum, log) => sum + log.amt, 0);
+        
+        const totalHtml = dayTotal > 0 ? `<div class="day-total-tag">💰 本日總計：NT$ ${dayTotal.toLocaleString()}</div>` : '';
 
-    // 3. 如果沒紀錄就顯示「尚未有紀錄」
-    if(logs.length === 0) { 
-        div.innerHTML = '<div style="color:#aaa;text-align:center;padding:20px;">這天尚未有紀錄</div>'; 
-        return; 
-    }
+        if(logs.length === 0) { 
+            div.innerHTML = '<div style="color:#aaa;text-align:center;padding:20px;">這天尚未有紀錄</div>'; 
+            return; 
+        }
 
-    // 4. 把總和跟原本的紀錄清單結合起來顯示
-    div.innerHTML = totalHtml + logs.map(l => `
-        <div class="log-item">
-            <span>${l.text} ($${l.amt})</span>
-            <span style="color:#ff7675;font-weight:bold;padding:0 10px;cursor:pointer;" onclick="undo(${l.id})">✖</span>
-        </div>
-    `).reverse().join('');
-}
+        div.innerHTML = totalHtml + logs.map(l => `
+            <div class="log-item">
+                <span>${l.text} ($${l.amt})</span>
+                <span style="color:#ff7675;font-weight:bold;padding:0 10px" onclick="undo(${l.id})">✖</span>
+            </div>
+        `).reverse().join('');
     }
 
     function handleLive(idx, plat) {
         const m = members[idx];
-        const n = prompt(`【${m.en}】的 ${plat} 直播人數？ (Solo請填 1)`, "1");
+        const n = prompt(`【${m.en}】直播人數？`, "1");
         if(n && !isNaN(n)) {
             let base = (m.vip ? 500 : 100);
             let total = parseInt(base) + (parseInt(n)>1 ? (parseInt(n)-1)*50 : 0);
@@ -147,10 +138,10 @@
     }
 
     function nextDay() {
-        if(!confirm("確定要結束今天，並將日期改為明天嗎？")) return;
+        if(!confirm("確定要進入下一天嗎？")) return;
         let d = new Date(state.currentDate);
         d.setDate(d.getDate() + 1);
-        state.currentDate = d.toISOString().split('T')[0];
+        state.currentDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         save();
         window.scrollTo(0,0);
     }
@@ -158,16 +149,18 @@
     function init() {
         const saved = localStorage.getItem('SVT_FINAL_STABLE_V1');
         if(saved) {
-            state = JSON.parse(saved);
+            const parsed = JSON.parse(saved);
+            state = parsed;
+            // 每次打開自動對時到「今天」
             state.currentDate = getToday();
         }
         
         const list = document.getElementById('memberList');
+        list.innerHTML = '';
         members.forEach((m, i) => {
             const p = m.vip ? prices.wonwoo : prices.others;
             const card = document.createElement('div');
             card.className = 'member-card';
-            
             let btns = `
                 <button onclick="add('${m.en}','WVS發文',${p.w_p})">WVS發文</button>
                 <button onclick="add('${m.en}','WVS留言',${p.w_m})">WVS留言</button>
@@ -178,14 +171,7 @@
                 <button class="btn-live" onclick="handleLive(${i},'IG')">IG直播</button>
             `;
             if(m.vip) btns += `<button class="btn-photo" onclick="add('${m.en}','IG攝影帳',${p.i_photo})">IG攝影帳</button>`;
-            
-            card.innerHTML = `
-                <div class="member-name">
-                    ${m.en} <span style="font-size:14px; color:#888; font-weight:normal">${m.ko}</span>
-                    ${m.vip?'<span style="color:var(--rose)">💜</span>':''}
-                </div>
-                <div class="btn-grid">${btns}</div>
-            `;
+            card.innerHTML = `<div class="member-name">${m.en} <small style="font-weight:normal;color:#888">${m.ko}</small> ${m.vip?'💜':''}</div><div class="btn-grid">${btns}</div>`;
             list.appendChild(card);
         });
         updateUI();
