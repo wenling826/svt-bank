@@ -7,51 +7,48 @@
     <style>
         :root { --rose: #F7CAC9; --serenity: #92A8D1; --purple: #9b59b6; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, "PingFang TC", sans-serif; background: #fdfbfb; margin: 0; padding-bottom: 120px; }
+        body { font-family: -apple-system, "PingFang TC", sans-serif; background: #fdfbfb; margin: 0; padding-bottom: 120px; overflow-x: hidden; }
         
-        /* 標題列 */
         .header-fixed { position: sticky; top: 0; z-index: 999; background: linear-gradient(to right, var(--rose), var(--serenity)); color: white; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         h1 { margin: 0; font-size: 20px; letter-spacing: 1px; }
         
-        /* 總金額與日期區 */
         .total-box { background: white; padding: 15px; margin: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 2px solid var(--rose); }
         #dateInput { border: 1px solid #ddd; padding: 8px; border-radius: 8px; font-size: 16px; color: #555; outline: none; background: #fff; }
         .total-amount { color: #e84393; font-size: 20px; font-weight: bold; }
         #totalDisplay { font-size: 24px; }
 
-        /* 成員卡片 */
-        .member-card { background: white; margin: 12px; padding: 15px; border-radius: 15px; border: 1px solid #eee; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .member-card { background: white; margin: 12px; padding: 15px; border-radius: 15px; border: 1px solid #eee; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: relative; }
         .member-name { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #333; display: flex; align-items: center; gap: 8px; }
         
-        /* 按鈕網格 */
         .btn-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        button { padding: 12px 5px; background: #fff; border: 1px solid #eee; border-radius: 10px; font-size: 14px; color: #555; cursor: pointer; transition: all 0.2s; font-weight: 500; }
-        button:active { transform: scale(0.95); background: #f9f9f9; }
         
-        /* 特殊按鈕顏色 */
+        /* 按鈕基礎樣式 */
+        button { 
+            position: relative; padding: 12px 5px; background: #fff; border: 1px solid #eee; 
+            border-radius: 10px; font-size: 14px; color: #555; cursor: pointer; 
+            transition: all 0.2s; font-weight: 500; outline: none; 
+        }
+        
+        /* 點擊時的閃爍回饋 */
+        .btn-flash { background-color: var(--serenity) !important; color: white !important; transform: scale(0.92); }
+        
         .btn-live { background-color: #fff9db; border-color: #f1c40f; color: #d35400; font-weight: bold; }
         .btn-photo { background-color: #f5f6fa; border-color: var(--purple); color: var(--purple); font-weight: bold; }
         
-        /* 明細區域 */
-        .log-area { margin: 15px; background: #f8f9fa; padding: 15px; border-radius: 12px; min-height: 80px; }
-        .log-header { font-weight: bold; margin-bottom: 15px; color: #666; font-size: 15px; }
-        
-        /* 重點：每日總計標籤 */
-        .day-total-tag { 
-            background: linear-gradient(135deg, var(--rose), var(--serenity)); 
-            color: white; 
-            padding: 8px 16px; 
-            border-radius: 20px; 
-            display: inline-block; 
-            margin-bottom: 15px; 
-            font-weight: bold; 
-            font-size: 15px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1); 
+        /* 飄浮數字動畫 */
+        .plus-money {
+            position: absolute; color: #e84393; font-weight: bold; font-size: 18px;
+            pointer-events: none; animation: floatUp 0.8s ease-out forwards; z-index: 1000;
         }
-        
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-40px); }
+        }
+
+        .log-area { margin: 15px; background: #f8f9fa; padding: 15px; border-radius: 12px; min-height: 80px; }
+        .day-total-tag { background: linear-gradient(135deg, var(--rose), var(--serenity)); color: white; padding: 8px 16px; border-radius: 20px; display: inline-block; margin-bottom: 15px; font-weight: bold; font-size: 15px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
         .log-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #ddd; font-size: 14px; align-items: center; }
         
-        /* 底部按鈕 */
         .footer { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.95); padding: 15px 20px 30px 20px; text-align: center; border-top: 1px solid #eee; backdrop-filter: blur(10px); }
         .next-btn { background: var(--rose); color: white; border: none; padding: 14px; border-radius: 30px; width: 100%; font-size: 16px; font-weight: bold; box-shadow: 0 4px 15px rgba(247,202,201,0.6); }
     </style>
@@ -68,7 +65,7 @@
 <div id="memberList"></div>
 
 <div class="log-area">
-    <div class="log-header">📋 今日存錢明細</div>
+    <div class="log-header" style="font-weight:bold; margin-bottom:10px; color:#666;">📋 今日存錢明細</div>
     <div id="logList"></div>
 </div>
 
@@ -77,10 +74,10 @@
 </div>
 
 <script>
-    // --- 資料設定區 ---
+    // --- 1. 最新瘦身版價格 ---
     const prices = {
-        wonwoo: { w_p: 100, w_m: 50, w_s: 100, w_l: 500, i_p: 100, i_s: 100, i_photo: 100, i_live: 500 },
-        others: { w_p: 50, w_m: 10, w_s: 20, w_l: 100, i_p: 50, i_s: 20, i_live: 100 }
+        wonwoo: { w_p: 50, w_m: 20, w_s: 30, w_l: 200, i_p: 50, i_s: 30, i_photo: 50, i_live: 200, extra: 10 },
+        others: { w_p: 20, w_m: 10, w_s: 10, w_l: 50, i_p: 20, i_s: 10, i_live: 50, extra: 10 }
     };
 
     const members = [
@@ -88,46 +85,81 @@
         {en:"Joshua", ko:"지수", vip:false}, {en:"Jun", ko:"준휘", vip:false},
         {en:"Hoshi", ko:"순영", vip:false}, {en:"Wonwoo", ko:"원우", vip:true},
         {en:"Woozi", ko:"지훈", vip:false}, {en:"The8", ko:"명호", vip:false},
-        {en:"Mingyu", ko:"민규", vip:false}, {en:"DK", ko:"석민", vip:false},
+        {en:"Mingyu", ko:"민규", vip:false}, {en:"DK", ko:"석敏", vip:false},
         {en:"Seungkwan", ko:"승관", vip:false}, {en:"Vernon", ko:"한솔", vip:false},
         {en:"Dino", ko:"찬", vip:false}
     ];
 
-    // 取得今天日期字串
     function getToday() {
         const now = new Date();
-        const y = now.getFullYear();
-        const m = String(now.getMonth() + 1).padStart(2, '0');
-        const d = String(now.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     }
 
-    // --- 核心邏輯區 ---
     let state = { total: 0, currentDate: getToday(), allLogs: {} };
 
-    // 存檔 (使用固定名稱 SVT_FINAL_STABLE_V1 以防資料遺失)
+    // --- 2. 視覺特效功能 ---
+    function triggerEffect(element, amount) {
+        // 按鈕閃爍
+        element.classList.add('btn-flash');
+        setTimeout(() => element.classList.remove('btn-flash'), 200);
+
+        // 飄浮金額
+        const rect = element.getBoundingClientRect();
+        const plus = document.createElement('div');
+        plus.className = 'plus-money';
+        plus.innerText = `+$${amount}`;
+        plus.style.left = `${rect.left + rect.width/2 - 20}px`;
+        plus.style.top = `${rect.top + window.scrollY}px`;
+        document.body.appendChild(plus);
+        setTimeout(() => plus.remove(), 800);
+    }
+
+    function recalculateAllHistory() {
+        let newGlobalTotal = 0;
+        Object.keys(state.allLogs).forEach(date => {
+            state.allLogs[date].forEach(log => {
+                const isVip = log.text.includes("Wonwoo");
+                const p = isVip ? prices.wonwoo : prices.others;
+                const txt = log.text;
+                if (txt.includes("WVS發文")) log.amt = p.w_p;
+                else if (txt.includes("WVS留言")) log.amt = p.w_m;
+                else if (txt.includes("WVS限動")) log.amt = p.w_s;
+                else if (txt.includes("IG發文")) log.amt = p.i_p;
+                else if (txt.includes("IG限動")) log.amt = p.i_s;
+                else if (txt.includes("IG攝影帳")) log.amt = p.i_photo;
+                else if (txt.includes("直播")) {
+                    const match = txt.match(/\((\d+)人\)/);
+                    const count = match ? parseInt(match[1]) : 1;
+                    const base = txt.includes("WVS") ? p.w_l : p.i_live;
+                    log.amt = base + (count > 1 ? (count - 1) * p.extra : 0);
+                }
+                newGlobalTotal += log.amt;
+            });
+        });
+        state.total = newGlobalTotal;
+        save();
+    }
+
     function save() {
         localStorage.setItem('SVT_FINAL_STABLE_V1', JSON.stringify(state));
         updateUI();
     }
 
-    // 更新畫面
     function updateUI() {
         document.getElementById('totalDisplay').innerText = state.total.toLocaleString();
         document.getElementById('dateInput').value = state.currentDate;
         renderLogs();
     }
 
-    // 新增紀錄
-    function add(name, act, amt) {
+    function add(name, act, amt, event) {
         state.total += amt;
         const dk = state.currentDate;
         if (!state.allLogs[dk]) state.allLogs[dk] = [];
         state.allLogs[dk].push({ id: Date.now(), amt: amt, text: `${name} ${act}` });
+        if(event) triggerEffect(event.currentTarget, amt);
         save();
     }
 
-    // 刪除紀錄
     function undo(id) {
         const dk = state.currentDate;
         const logs = state.allLogs[dk];
@@ -139,24 +171,15 @@
         }
     }
 
-    // 渲染明細列表 (含每日總計功能)
     function renderLogs() {
         const div = document.getElementById('logList');
         const logs = state.allLogs[state.currentDate] || [];
-        
-        // 計算當日總金額
         const dayTotal = logs.reduce((sum, log) => sum + log.amt, 0);
-        
-        // 產生總金額標籤 HTML
-        const totalHtml = dayTotal > 0 ? 
-            `<div class="day-total-tag">💰 本日總計：NT$ ${dayTotal.toLocaleString()}</div>` : '';
-
+        const totalHtml = dayTotal > 0 ? `<div class="day-total-tag">💰 本日總計：NT$ ${dayTotal.toLocaleString()}</div>` : '';
         if(logs.length === 0) { 
             div.innerHTML = '<div style="color:#aaa;text-align:center;padding:20px;">這天尚未有紀錄</div>'; 
             return; 
         }
-
-        // 組合 HTML
         div.innerHTML = totalHtml + logs.map(l => `
             <div class="log-item">
                 <span>${l.text} ($${l.amt})</span>
@@ -165,76 +188,60 @@
         `).reverse().join('');
     }
 
-    // 處理直播輸入
-    function handleLive(idx, plat) {
+    function handleLive(idx, plat, event) {
         const m = members[idx];
+        const p = m.vip ? prices.wonwoo : prices.others;
         const n = prompt(`【${m.en}】${plat}直播人數？(Solo請填1)`, "1");
         if(n && !isNaN(n)) {
-            let base = (m.vip ? 500 : 100);
-            let total = parseInt(base) + (parseInt(n)>1 ? (parseInt(n)-1)*50 : 0);
-            add(m.en, `${plat}直播(${n}人)`, total);
+            let base = (plat === 'WVS' ? p.w_l : p.i_live);
+            let total = parseInt(base) + (parseInt(n)>1 ? (parseInt(n)-1)*p.extra : 0);
+            add(m.en, `${plat}直播(${n}人)`, total, event);
         }
     }
 
-    // 切換日期
     function updateDate() {
         state.currentDate = document.getElementById('dateInput').value;
         save();
     }
 
-    // 進入下一天
     function nextDay() {
         if(!confirm("確定要結束今天，並跳到下一天嗎？")) return;
         let d = new Date(state.currentDate);
         d.setDate(d.getDate() + 1);
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        state.currentDate = `${y}-${m}-${day}`;
+        state.currentDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         save();
         window.scrollTo(0,0);
     }
 
-    // 初始化
     function init() {
         const saved = localStorage.getItem('SVT_FINAL_STABLE_V1');
         if(saved) {
             state = JSON.parse(saved);
-            state.currentDate = getToday(); // 每次開啟 App 自動跳回今天
+            state.currentDate = getToday();
+            recalculateAllHistory();
         }
         
         const list = document.getElementById('memberList');
-        list.innerHTML = ''; // 清空列表避免重複
-        
+        list.innerHTML = '';
         members.forEach((m, i) => {
             const p = m.vip ? prices.wonwoo : prices.others;
             const card = document.createElement('div');
             card.className = 'member-card';
-            
             let btns = `
-                <button onclick="add('${m.en}','WVS發文',${p.w_p})">WVS發文</button>
-                <button onclick="add('${m.en}','WVS留言',${p.w_m})">WVS留言</button>
-                <button onclick="add('${m.en}','WVS限動',${p.w_s})">WVS限動</button>
-                <button class="btn-live" onclick="handleLive(${i},'WVS')">WVS直播</button>
-                <button onclick="add('${m.en}','IG發文',${p.i_p})">IG發文</button>
-                <button onclick="add('${m.en}','IG限動',${p.i_s})">IG限動</button>
-                <button class="btn-live" onclick="handleLive(${i},'IG')">IG直播</button>
+                <button onclick="add('${m.en}','WVS發文',${p.w_p}, event)">WVS發文</button>
+                <button onclick="add('${m.en}','WVS留言',${p.w_m}, event)">WVS留言</button>
+                <button onclick="add('${m.en}','WVS限動',${p.w_s}, event)">WVS限動</button>
+                <button class="btn-live" onclick="handleLive(${i},'WVS', event)">WVS直播</button>
+                <button onclick="add('${m.en}','IG發文',${p.i_p}, event)">IG發文</button>
+                <button onclick="add('${m.en}','IG限動',${p.i_s}, event)">IG限動</button>
+                <button class="btn-live" onclick="handleLive(${i},'IG', event)">IG直播</button>
             `;
-            if(m.vip) btns += `<button class="btn-photo" onclick="add('${m.en}','IG攝影帳',${p.i_photo})">IG攝影帳</button>`;
-            
-            card.innerHTML = `
-                <div class="member-name">
-                    ${m.en} <span style="font-size:14px;color:#888;font-weight:normal;margin-left:5px;">${m.ko}</span> 
-                    ${m.vip?'<span style="margin-left:5px;">💜</span>':''}
-                </div>
-                <div class="btn-grid">${btns}</div>
-            `;
+            if(m.vip) btns += `<button class="btn-photo" onclick="add('${m.en}','IG攝影帳',${p.i_photo}, event)">IG攝影帳</button>`;
+            card.innerHTML = `<div class="member-name">${m.en} <span style="font-size:14px;color:#888;font-weight:normal;">${m.ko}</span> ${m.vip?'💜':''}</div><div class="btn-grid">${btns}</div>`;
             list.appendChild(card);
         });
         updateUI();
     }
-    
-    // 啟動程式
     init();
 </script>
 </body>
