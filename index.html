@@ -3,246 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SVT Dream Bank</title>
+    <title>SVT Dream Bank 2026</title>
     <style>
-        /* 基礎樣式重置 */
-        body { font-family: sans-serif; background-color: #fdfbfb; margin: 0; padding-bottom: 120px; color: #333; -webkit-user-select: none; }
+        /* 基礎設置 */
+        body { font-family: -apple-system, sans-serif; background-color: #fcfafb; margin: 0; padding-bottom: 120px; -webkit-user-select: none; }
         
-        /* 標頭：玫瑰石英與寧靜藍 */
-        .header { background: linear-gradient(to right, #F7CAC9, #92A8D1); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        h1 { margin: 0; font-size: 18px; }
+        /* 頂部粉藍漸層 */
+        .header { background: linear-gradient(to right, #F7CAC9, #92A8D1); color: white; padding: 20px 15px; text-align: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header h1 { margin: 0; font-size: 18px; letter-spacing: 1px; }
 
-        /* 總額顯示 */
-        .total-card { background: white; margin: 10px; padding: 15px; border-radius: 15px; border: 2px solid #F7CAC9; display: flex; justify-content: space-between; align-items: center; }
-        .amount { color: #e84393; font-size: 24px; font-weight: bold; }
+        /* 金額與日期區 */
+        .status-bar { background: white; margin: 12px; padding: 18px; border-radius: 15px; border: 2px solid #F7CAC9; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .total-money { color: #e84393; font-size: 26px; font-weight: bold; }
+        #dateInput { border: none; font-size: 16px; color: #666; font-weight: bold; width: 130px; }
 
-        /* 倍數選擇器 (變大更好按) */
-        .qty-bar { background: #eee; margin: 10px; padding: 5px; border-radius: 10px; display: flex; align-items: center; }
-        .qty-btn { flex: 1; padding: 10px; border: none; background: white; margin: 2px; border-radius: 8px; font-weight: bold; font-size: 16px; }
-        .qty-active { background: #92A8D1; color: white; }
+        /* 倍數切換器 */
+        .multiplier-box { background: #eee; margin: 0 12px 15px; padding: 6px; border-radius: 12px; display: flex; align-items: center; }
+        .m-btn { flex: 1; padding: 12px; border: none; background: white; margin: 3px; border-radius: 8px; font-weight: bold; font-size: 16px; color: #555; }
+        .m-active { background: #92A8D1; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
-        /* 成員卡片 */
-        .card { background: white; margin: 15px 10px; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; }
-        .name { font-size: 18px; font-weight: bold; margin-bottom: 12px; border-bottom: 2px solid #f9f9f9; padding-bottom: 5px; }
+        /* 成員卡片排版 */
+        .member-card { background: white; margin: 15px 12px; padding: 20px; border-radius: 18px; border: 1px solid #eee; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .member-name { font-size: 19px; font-weight: bold; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; }
         
         /* 按鈕網格 */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn { padding: 12px 5px; border-radius: 10px; border: 1px solid #eee; background: white; font-size: 14px; cursor: pointer; }
-        .btn:active { background: #f0f0f0; transform: scale(0.98); }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .action-btn { padding: 15px 5px; border-radius: 12px; border: 1px solid #f0f0f0; background: #fff; font-size: 14px; font-weight: 500; color: #555; cursor: pointer; }
+        .action-btn:active { background: #f9f9f9; transform: scale(0.96); }
 
-        /* 指定按鈕顏色 (直接寫死) */
-        .btn-live { background-color: #fff9db !important; border-color: #f1c40f !important; color: #d35400 !important; font-weight: bold; }
-        .btn-photo { background-color: #f3ebff !important; border-color: #9b59b6 !important; color: #9b59b6 !important; font-weight: bold; }
+        /* 特殊按鈕顏色 (確保在手機上清晰) */
+        .btn-live { background-color: #FFF9C4 !important; border-color: #FBC02D !important; color: #F57F17 !important; font-weight: bold; }
+        .btn-photo { background-color: #F3E5F5 !important; border-color: #9C27B0 !important; color: #9C27B0 !important; font-weight: bold; }
 
-        /* 紀錄區 */
-        .log-box { background: #f8f9fa; margin: 10px; padding: 15px; border-radius: 15px; }
-        .log-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #ccc; font-size: 14px; }
+        /* 紀錄明細 */
+        .log-section { background: #fdfdfd; margin: 15px 12px; padding: 15px; border-radius: 15px; border: 1px dashed #ddd; }
+        .log-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; font-size: 14px; }
 
-        /* 底部選單 */
-        .nav { position: fixed; bottom: 0; width: 100%; background: white; padding: 10px 10px 30px 10px; display: flex; gap: 10px; border-top: 1px solid #eee; }
-        .nav-btn { flex: 1; padding: 15px; border-radius: 30px; border: none; font-weight: bold; font-size: 16px; text-align: center; }
-        .nav-save { background: #F7CAC9; color: white; }
-        .nav-con { background: white; border: 1px solid #92A8D1; color: #92A8D1; }
+        /* 底部導航 */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; padding: 12px 12px 30px; display: flex; gap: 12px; border-top: 1px solid #eee; z-index: 1000; }
+        .nav-item { flex: 1; padding: 16px; border-radius: 30px; border: none; font-weight: bold; font-size: 16px; text-align: center; }
+        .nav-active { background: #F7CAC9; color: white; box-shadow: 0 4px 12px rgba(247,202,201,0.5); }
+        .nav-inactive { background: white; border: 1px solid #92A8D1; color: #92A8D1; }
 
-        /* 隱藏區塊 */
         .hidden { display: none; }
-
-        /* 飄浮動畫 */
-        .pop { position: absolute; color: #e84393; font-weight: bold; animation: up 0.8s forwards; pointer-events: none; }
-        @keyframes up { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-30px); } }
+        .pop-text { position: absolute; color: #e84393; font-weight: bold; animation: popUp 0.8s ease-out forwards; pointer-events: none; z-index: 2000; }
+        @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-40px); } }
     </style>
 </head>
 <body>
 
 <div class="header"><h1>💎 2026 SVT Dream Bank</h1></div>
 
-<div class="total-card">
-    <input type="date" id="dateInput" onchange="updateDate()" style="font-size: 16px; border:none; background:transparent;">
-    <div class="amount">$<span id="totalDisplay">0</span></div>
+<div class="status-bar">
+    <input type="date" id="dateInput" onchange="changeDate()">
+    <div class="total-money">$<span id="displayTotal">0</span></div>
 </div>
 
-<div id="savePage">
-    <div class="qty-bar">
-        <span style="font-size:12px; margin-right:5px; color:#666;">倍數</span>
-        <button class="qty-btn qty-active" onclick="setQty(1, this)">1</button>
-        <button class="qty-btn" onclick="setQty(3, this)">3</button>
-        <button class="qty-btn" onclick="setQty(5, this)">5</button>
-        <button class="qty-btn" onclick="setQty(10, this)">10</button>
+<div id="page-save">
+    <div class="multiplier-box">
+        <span style="font-size:12px; color:#888; padding:0 10px;">倍數</span>
+        <button class="m-btn m-active" onclick="setM(1, this)">1</button>
+        <button class="m-btn" onclick="setM(3, this)">3</button>
+        <button class="m-btn" onclick="setM(5, this)">5</button>
+        <button class="m-btn" onclick="setM(10, this)">10</button>
     </div>
+    
     <div id="memberList"></div>
-    <div class="log-box">
-        <div style="font-weight:bold; color:#888; margin-bottom:10px;">📋 今日明細</div>
-        <div id="logList"></div>
+
+    <div class="log-section">
+        <div style="font-weight:bold; margin-bottom:10px; color:#999;">📋 今日明細</div>
+        <div id="logContent"></div>
     </div>
 </div>
 
-<div id="concertPage" class="hidden">
-    <div class="card" style="border: 2px solid #92A8D1;">
-        <p style="text-align:center; font-weight:bold; color:#92A8D1;">🎟️ 登記演唱會支出</p>
-        <input type="text" id="c_name" placeholder="演唱會名稱" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
-        <input type="date" id="c_date" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
-        <input type="number" id="c_cost" placeholder="票價+手續費 (總額)" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
-        <button onclick="addConcert()" style="width:100%; padding:15px; background:#92A8D1; color:white; border:none; border-radius:10px; font-weight:bold;">確認扣款</button>
+<div id="page-concert" class="hidden">
+    <div class="member-card" style="border: 2px solid #92A8D1;">
+        <h3 style="text-align:center; color:#92A8D1; margin-top:0;">🎟️ 新增支出紀錄</h3>
+        <input type="text" id="c_name" placeholder="演唱會/活動名稱" style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
+        <input type="number" id="c_cost" placeholder="支出總金額" style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
+        <button onclick="addConcert()" style="width:100%; padding:15px; background:#92A8D1; color:white; border:none; border-radius:10px; font-weight:bold;">確認存檔並扣款</button>
     </div>
-    <div id="concertList"></div>
+    <div id="concertContent"></div>
 </div>
 
-<div class="nav">
-    <button class="nav-btn nav-save" id="btn1" onclick="go(1)">💰 存錢</button>
-    <button class="nav-btn nav-con" id="btn2" onclick="go(2)">🎟️ 成就</button>
+<div class="nav-bar">
+    <button id="nav1" class="nav-item nav-active" onclick="showPage(1)">💰 存錢</button>
+    <button id="nav2" class="nav-item nav-inactive" onclick="showPage(2)">🎟️ 成就</button>
 </div>
 
 <script>
-    let currentQty = 1;
-    let state = { total: 0, currentDate: new Date().toISOString().split('T')[0], allLogs: {}, concertLogs: [] };
-
-    const prices = {
+    // 狀態變數
+    var currentM = 1;
+    var state = { total: 0, currentDate: new Date().toISOString().split('T')[0], allLogs: {}, concertLogs: [] };
+    
+    // 價格表
+    var prices = {
         wonwoo: { w_p: 50, w_m: 20, w_s: 30, w_l: 200, i_p: 50, i_s: 30, i_photo: 50, i_live: 200, extra: 10 },
         others: { w_p: 20, w_m: 10, w_s: 10, w_l: 50, i_p: 20, i_s: 10, i_live: 50, extra: 10 }
     };
+    var members = ["S.coups", "Jeonghan", "Joshua", "Jun", "Hoshi", "Wonwoo", "Woozi", "The8", "Mingyu", "DK", "Seungkwan", "Vernon", "Dino"];
 
-    const members = ["S.coups", "Jeonghan", "Joshua", "Jun", "Hoshi", "Wonwoo", "Woozi", "The8", "Mingyu", "DK", "Seungkwan", "Vernon", "Dino"];
-
-    function setQty(q, btn) {
-        currentQty = q;
-        document.querySelectorAll('.qty-btn').forEach(b => b.classList.remove('qty-active'));
-        btn.classList.add('qty-active');
+    // 設定倍數
+    function setM(val, btn) {
+        currentM = val;
+        var btns = document.getElementsByClassName('m-btn');
+        for(var i=0; i<btns.length; i++) btns[i].classList.remove('m-active');
+        btn.classList.add('m-active');
     }
 
-    function go(page) {
-        if(page === 1) {
-            document.getElementById('savePage').classList.remove('hidden');
-            document.getElementById('concertPage').classList.add('hidden');
-            document.getElementById('btn1').className = 'nav-btn nav-save';
-            document.getElementById('btn2').className = 'nav-btn nav-con';
+    // 切換頁面
+    function showPage(p) {
+        if(p === 1) {
+            document.getElementById('page-save').classList.remove('hidden');
+            document.getElementById('page-concert').classList.add('hidden');
+            document.getElementById('nav1').className = 'nav-item nav-active';
+            document.getElementById('nav2').className = 'nav-item nav-inactive';
         } else {
-            document.getElementById('savePage').classList.add('hidden');
-            document.getElementById('concertPage').classList.remove('hidden');
-            document.getElementById('btn1').className = 'nav-btn nav-con';
-            document.getElementById('btn2').className = 'nav-btn nav-save';
+            document.getElementById('page-save').classList.add('hidden');
+            document.getElementById('page-concert').classList.remove('hidden');
+            document.getElementById('nav1').className = 'nav-item nav-inactive';
+            document.getElementById('nav2').className = 'nav-item nav-active';
             renderConcerts();
         }
     }
 
-    function add(name, act, price, event) {
-        const amt = price * currentQty;
-        const dk = state.currentDate;
-        if(!state.allLogs[dk]) state.allLogs[dk] = [];
-        state.allLogs[dk].push({ id: Date.now(), amt: amt, text: name + " " + act + (currentQty>1?"(x"+currentQty+")":"") });
+    // 存錢
+    function addMoney(name, act, price, event) {
+        var finalAmt = price * currentM;
+        var today = state.currentDate;
+        if(!state.allLogs[today]) state.allLogs[today] = [];
+        
+        var label = name + " " + act + (currentM > 1 ? " (x" + currentM + ")" : "");
+        state.allLogs[today].push({ id: Date.now(), amt: finalAmt, text: label });
         
         if(event) {
-            const rect = event.target.getBoundingClientRect();
-            const p = document.createElement('div');
-            p.className = 'pop';
-            p.innerText = "+$" + amt;
-            p.style.left = rect.left + "px";
+            var rect = event.target.getBoundingClientRect();
+            var p = document.createElement('div');
+            p.className = 'pop-text';
+            p.innerText = "+$" + finalAmt;
+            p.style.left = (rect.left + rect.width/2) + "px";
             p.style.top = (rect.top + window.scrollY) + "px";
             document.body.appendChild(p);
-            setTimeout(()=>p.remove(), 800);
+            setTimeout(function(){ p.remove(); }, 800);
         }
-        recalc();
+        refresh();
     }
 
-    function recalc() {
-        let income = 0, expense = 0;
-        Object.keys(state.allLogs).forEach(d => {
-            state.allLogs[d].forEach(l => income += l.amt);
-        });
-        state.concertLogs.forEach(c => expense += c.cost);
+    // 直播處理
+    function handleLive(name, isVip, plat) {
+        var p = isVip ? prices.wonwoo : prices.others;
+        var n = prompt(name + " " + plat + "直播人數？", "1");
+        if(n && !isNaN(n)) {
+            var base = (plat === 'WVS' ? p.w_l : p.i_live);
+            var total = parseInt(base) + (parseInt(n) > 1 ? (parseInt(n)-1)*p.extra : 0);
+            addMoney(name, plat + "直播(" + n + "人)", total);
+        }
+    }
+
+    // 計算總額
+    function refresh() {
+        var income = 0;
+        var expense = 0;
+        for(var d in state.allLogs) {
+            state.allLogs[d].forEach(function(l){ income += l.amt; });
+        }
+        state.concertLogs.forEach(function(c){ expense += c.cost; });
         state.total = income - expense;
-        save();
-    }
-
-    function save() {
+        
         localStorage.setItem('SVT_FINAL_STABLE_V1', JSON.stringify(state));
-        updateUI();
+        updateDisplay();
     }
 
-    function updateUI() {
-        document.getElementById('totalDisplay').innerText = state.total.toLocaleString();
+    function updateDisplay() {
+        document.getElementById('displayTotal').innerText = state.total.toLocaleString();
         document.getElementById('dateInput').value = state.currentDate;
-        const div = document.getElementById('logList');
-        const logs = state.allLogs[state.currentDate] || [];
-        div.innerHTML = logs.map(l => `
-            <div class="log-item">
-                <span>${l.text} ($${l.amt})</span>
-                <b style="color:red;" onclick="undo(${l.id})">✖</b>
-            </div>
-        `).reverse().join('');
+        var logs = state.allLogs[state.currentDate] || [];
+        var html = "";
+        for(var i = logs.length-1; i >= 0; i--) {
+            html += '<div class="log-row"><span>' + logs[i].text + ' ($' + logs[i].amt + ')</span><b style="color:red;" onclick="delLog(' + logs[i].id + ')">✖</b></div>';
+        }
+        document.getElementById('logContent').innerHTML = html || '<div style="color:#ccc;text-align:center;padding:20px;">無紀錄</div>';
     }
 
-    function undo(id) {
-        state.allLogs[state.currentDate] = state.allLogs[state.currentDate].filter(l => l.id !== id);
-        recalc();
+    function delLog(id) {
+        state.allLogs[state.currentDate] = state.allLogs[state.currentDate].filter(function(l){ return l.id !== id; });
+        refresh();
     }
 
+    // 演唱會
     function addConcert() {
-        const name = document.getElementById('c_name').value;
-        const cost = parseInt(document.getElementById('c_cost').value) || 0;
-        const date = document.getElementById('c_date').value;
-        if(!name || !date) return;
-        state.concertLogs.push({ id: Date.now(), name, cost, date });
-        document.getElementById('c_name').value = '';
-        document.getElementById('c_cost').value = '';
-        recalc();
+        var name = document.getElementById('c_name').value;
+        var cost = parseInt(document.getElementById('c_cost').value) || 0;
+        if(!name) return;
+        state.concertLogs.push({ id: Date.now(), name: name, cost: cost });
+        document.getElementById('c_name').value = "";
+        document.getElementById('c_cost').value = "";
+        refresh();
         renderConcerts();
     }
 
     function renderConcerts() {
-        const list = document.getElementById('concertList');
-        list.innerHTML = state.concertLogs.map(c => `
-            <div class="card" style="border-left:5px solid gold;">
-                <b>✨ ${c.name}</b> <small onclick="delC(${c.id})" style="color:red;float:right;">✖</small><br>
-                <small>${c.date}</small> <b style="float:right;color:#e84393;">-$${c.cost.toLocaleString()}</b>
-            </div>
-        `).reverse().join('');
+        var html = "";
+        for(var i = state.concertLogs.length-1; i >= 0; i--) {
+            var c = state.concertLogs[i];
+            html += '<div class="member-card" style="border-left:5px solid gold;"><b>' + c.name + '</b><span style="color:red;float:right;" onclick="delC(' + c.id + ')">✖</span><br><b style="color:#e84393;font-size:18px;">-$' + c.cost.toLocaleString() + '</b></div>';
+        }
+        document.getElementById('concertContent').innerHTML = html;
     }
 
     function delC(id) {
-        state.concertLogs = state.concertLogs.filter(c => c.id !== id);
-        recalc();
+        state.concertLogs = state.concertLogs.filter(function(c){ return c.id !== id; });
+        refresh();
         renderConcerts();
     }
 
-    function updateDate() { state.currentDate = document.getElementById('dateInput').value; updateUI(); }
+    function changeDate() { state.currentDate = document.getElementById('dateInput').value; updateDisplay(); }
 
-    function handleLive(name, isVip, plat) {
-        const p = isVip ? prices.wonwoo : prices.others;
-        const n = prompt(name + " " + plat + "直播人數？", "1");
-        if(n) {
-            const base = (plat === 'WVS' ? p.w_l : p.i_live);
-            const total = parseInt(base) + (parseInt(n)>1 ? (parseInt(n)-1)*p.extra : 0);
-            add(name, plat + "直播(" + n + "人)", total);
-        }
-    }
-
+    // 初始化
     function init() {
-        const saved = localStorage.getItem('SVT_FINAL_STABLE_V1');
+        var saved = localStorage.getItem('SVT_FINAL_STABLE_V1');
         if(saved) state = JSON.parse(saved);
         if(!state.concertLogs) state.concertLogs = [];
         
-        const list = document.getElementById('memberList');
-        members.forEach(m => {
-            const isVip = (m === "Wonwoo");
-            const p = isVip ? prices.wonwoo : prices.others;
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="name">${m} ${isVip?'💜':''}</div>
-                <div class="grid">
-                    <button class="btn" onclick="add('${m}','WVS發文',${p.w_p},event)">WVS發文</button>
-                    <button class="btn" onclick="add('${m}','WVS留言',${p.w_m},event)">WVS留言</button>
-                    <button class="btn" onclick="add('${m}','WVS限動',${p.w_s},event)">WVS限動</button>
-                    <button class="btn btn-live" onclick="handleLive('${m}',${isVip},'WVS')">WVS直播</button>
-                    <button class="btn" onclick="add('${m}','IG發文',${p.i_p},event)">IG發文</button>
-                    <button class="btn" onclick="add('${m}','IG限動',${p.i_s},event)">IG限動</button>
-                    <button class="btn btn-live" onclick="handleLive('${m}',${isVip},'IG')">IG直播</button>
-                    ${isVip ? `<button class="btn btn-photo" onclick="add('${m}','IG攝影帳',${p.i_photo},event)">IG攝影帳</button>` : ''}
-                </div>
-            `;
-            list.appendChild(card);
+        var list = document.getElementById('memberList');
+        members.forEach(function(m){
+            var isVip = (m === "Wonwoo");
+            var p = isVip ? prices.wonwoo : prices.others;
+            var div = document.createElement('div');
+            div.className = 'member-card';
+            var btns = 
+                '<button class="action-btn" onclick="addMoney(\''+m+'\',\'WVS發文\','+p.w_p+',event)">WVS發文</button>' +
+                '<button class="action-btn" onclick="addMoney(\''+m+'\',\'WVS留言\','+p.w_m+',event)">WVS留言</button>' +
+                '<button class="action-btn" onclick="addMoney(\''+m+'\',\'WVS限動\','+p.w_s+',event)">WVS限動</button>' +
+                '<button class="action-btn btn-live" onclick="handleLive(\''+m+'\','+isVip+',\'WVS\')">WVS直播</button>' +
+                '<button class="action-btn" onclick="addMoney(\''+m+'\',\'IG發文\','+p.i_p+',event)">IG發文</button>' +
+                '<button class="action-btn" onclick="addMoney(\''+m+'\',\'IG限動\','+p.i_s+',event)">IG限動</button>' +
+                '<button class="action-btn btn-live" onclick="handleLive(\''+m+'\','+isVip+',\'IG\')">IG直播</button>';
+            if(isVip) btns += '<button class="action-btn btn-photo" onclick="addMoney(\''+m+'\',\'IG攝影帳\','+p.i_photo+',event)">IG攝影帳</button>';
+            
+            div.innerHTML = '<div class="member-name">' + m + (isVip?' 💜':'') + '</div><div class="btn-grid">' + btns + '</div>';
+            list.appendChild(div);
         });
-        updateUI();
+        refresh();
     }
     init();
 </script>
