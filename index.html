@@ -7,42 +7,48 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>SVT Dream Bank</title>
     <style>
-        :root { --rose: #F7CAC9; --serenity: #92A8D1; --text-gray: #8e8e93; }
+        :root { --rose: #F7CAC9; --serenity: #92A8D1; --text-gray: #8e8e93; --gold: #D4AF37; }
         body { font-family: -apple-system, system-ui, sans-serif; background: #fdfbfb; margin: 0; padding-bottom: 140px; user-select: none; -webkit-user-select: none; }
         
-        /* 標頭適配動態島 */
         .header { background: linear-gradient(to right, var(--rose), var(--serenity)); color: white; padding: 55px 15px 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .header h1 { margin: 0; font-size: 18px; font-weight: 800; }
 
-        /* 總額卡片 */
         .top-card { background: white; margin: 15px; padding: 20px; border-radius: 20px; border: 2.5px solid var(--rose); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .total-val { color: #e84393; font-size: 28px; font-weight: 900; }
         #dateInput { border: none; font-size: 16px; font-weight: bold; color: #666; width: 135px; background: transparent; outline: none; }
 
-        /* 自訂倍數列：改為輸入框形式 */
+        /* 倍數區域 */
         .m-bar { background: #f0f0f2; margin: 0 15px 15px; padding: 12px; border-radius: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .m-label { font-size: 15px; font-weight: bold; color: #555; }
-        #customQty { width: 80px; padding: 8px; border: 1.5px solid var(--serenity); border-radius: 10px; text-align: center; font-size: 18px; font-weight: bold; color: var(--serenity); outline: none; }
+        .m-label { font-size: 14px; font-weight: bold; color: #555; }
+        #customQty { width: 60px; padding: 8px; border: 1.5px solid var(--serenity); border-radius: 10px; text-align: center; font-size: 16px; font-weight: bold; color: var(--serenity); outline: none; }
 
-        /* 成員卡片 */
-        .member-box { background: white; margin: 15px; padding: 20px; border-radius: 22px; border: 1px solid #efefef; box-shadow: 0 5px 15px rgba(0,0,0,0.04); }
-        .member-title { font-size: 19px; font-weight: bold; margin-bottom: 15px; display: flex; align-items: baseline; gap: 8px; }
-        .ko-name { font-size: 14px; color: var(--text-gray); font-weight: normal; }
+        /* 成員與通用卡片 */
+        .card { background: white; margin: 15px; padding: 20px; border-radius: 22px; border: 1px solid #efefef; box-shadow: 0 5px 15px rgba(0,0,0,0.04); }
+        .card-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; display: flex; align-items: baseline; gap: 8px; }
+        .ko-name { font-size: 13px; color: var(--text-gray); font-weight: normal; }
         
-        /* 按鈕網格 */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .btn { padding: 16px 5px; border-radius: 14px; border: 1px solid #f2f2f2; background: #fff; font-size: 14px; font-weight: 600; color: #444; -webkit-appearance: none; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { padding: 15px 5px; border-radius: 14px; border: 1px solid #f2f2f2; background: #fff; font-size: 13px; font-weight: 600; color: #444; }
         .btn:active { background: #f0f0f0; transform: scale(0.96); }
-
-        /* 強制顏色標籤 */
         .btn-yellow { background-color: #FFF9C4 !important; border-color: #FBC02D !important; color: #F57F17 !important; }
         .btn-purple { background-color: #F3E5F5 !important; border-color: #9C27B0 !important; color: #9C27B0 !important; }
 
-        /* 明細 */
-        .logs { background: #fafafa; margin: 15px; padding: 15px; border-radius: 15px; border: 1px dashed #ddd; }
-        .log-line { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+        /* 演唱會輸入區 */
+        .con-input-group { display: flex; flex-direction: column; gap: 8px; }
+        .con-input-group label { font-size: 12px; color: #888; margin-left: 5px; }
+        .con-input-group input { padding: 12px; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; outline: none; background: #fcfcfc; }
 
-        /* 底部導航 */
+        /* 演唱會票卡樣式 */
+        .ticket { background: #fff; border-left: 8px solid var(--serenity); position: relative; overflow: hidden; }
+        .ticket::after { content: ''; position: absolute; right: -15px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; background: #fdfbfb; border-radius: 50%; box-shadow: inset 2px 0 5px rgba(0,0,0,0.05); }
+        .ticket-header { border-bottom: 1px dashed #ddd; padding-bottom: 10px; margin-bottom: 10px; }
+        .ticket-body { font-size: 13px; color: #666; line-height: 1.6; }
+        .ticket-price { color: #e84393; font-weight: bold; font-size: 18px; margin-top: 5px; display: block; }
+        .del-btn { position: absolute; top: 15px; right: 15px; color: #ff7675; font-size: 18px; }
+
+        .logs { background: #fafafa; margin: 15px; padding: 15px; border-radius: 15px; border: 1px dashed #ddd; }
+        .log-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+
         .footer { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.92); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 15px 15px 40px; display: flex; gap: 12px; border-top: 1px solid #eee; box-sizing: border-box; z-index: 9999; }
         .f-btn { flex: 1; padding: 16px; border-radius: 30px; border: none; font-weight: bold; font-size: 16px; }
         .f-on { background: var(--rose); color: white; box-shadow: 0 4px 10px rgba(247,202,201,0.4); }
@@ -62,10 +68,9 @@
 
 <div id="save-page">
     <div class="m-bar">
-        <span class="m-label">本次存錢次數：</span>
+        <span class="m-label">本次次數：</span>
         <input type="number" id="customQty" value="1" min="1" onchange="checkQty()">
     </div>
-
     <div id="m-list"></div>
     <div class="logs">
         <div style="font-weight:bold; color:#999; margin-bottom:10px;">📋 今日明細</div>
@@ -74,18 +79,34 @@
 </div>
 
 <div id="concert-page" class="hidden">
-    <div class="member-box" style="border: 2px solid var(--serenity);">
-        <h3 style="margin-top:0; color:var(--serenity); text-align:center;">🎟️ 新增成就支出</h3>
-        <input type="text" id="c-name" placeholder="活動名稱" style="width:100%; padding:14px; margin-bottom:10px; border:1px solid #ddd; border-radius:12px; box-sizing:border-box; font-size:16px;">
-        <input type="number" id="c-cost" placeholder="支出總金額" style="width:100%; padding:14px; margin-bottom:10px; border:1px solid #ddd; border-radius:12px; box-sizing:border-box; font-size:16px;">
-        <button onclick="addC()" style="width:100%; padding:16px; background:var(--serenity); color:white; border:none; border-radius:15px; font-weight:bold; font-size:16px;">確認扣款</button>
+    <div class="card" style="border: 2px solid var(--serenity);">
+        <h3 style="margin-top:0; color:var(--serenity); text-align:center;">🎟️ 紀錄演唱會支出</h3>
+        <div class="con-input-group">
+            <label>演唱會名稱</label>
+            <input type="text" id="c-name" placeholder="例如：Follow to Japan">
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div><label>買票日</label><input type="date" id="c-buy-date"></div>
+                <div><label>活動日</label><input type="date" id="c-event-date"></div>
+            </div>
+
+            <label>座位</label>
+            <input type="text" id="c-seat" placeholder="例如：搖滾A區 1xx號">
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div><label>票價</label><input type="number" id="c-ticket" placeholder="0"></div>
+                <div><label>手續費</label><input type="number" id="c-fee" placeholder="0"></div>
+            </div>
+            
+            <button onclick="addC()" style="width:100%; padding:16px; background:var(--serenity); color:white; border:none; border-radius:15px; font-weight:bold; font-size:16px; margin-top:10px;">確認並扣款</button>
+        </div>
     </div>
     <div id="c-list"></div>
 </div>
 
 <div class="footer">
     <button id="n1" class="f-btn f-on" onclick="tab(1)">💰 存錢</button>
-    <button id="n2" class="f-btn f-off" onclick="tab(2)">🎟️ 成就</button>
+    <button id="n2" class="f-btn f-off" onclick="tab(2)">🎟️ 演唱會記錄</button>
 </div>
 
 <script>
@@ -94,7 +115,6 @@
         wonwoo: { w_p: 50, w_m: 20, w_s: 30, w_l: 200, i_p: 50, i_s: 30, i_photo: 50, i_live: 200, extra: 10 },
         others: { w_p: 20, w_m: 10, w_s: 10, w_l: 50, i_p: 20, i_s: 10, i_live: 50, extra: 10 }
     };
-    
     var members = [
         {en:"S.coups", ko:"승철"}, {en:"Jeonghan", ko:"정한"}, {en:"Joshua", ko:"지수"},
         {en:"Jun", ko:"준휘"}, {en:"Hoshi", ko:"순영"}, {en:"Wonwoo", ko:"원우"},
@@ -140,11 +160,69 @@
             var base = (plat === 'WVS' ? p.w_l : p.i_live);
             var singleTotal = parseInt(base) + (parseInt(n_live)>1 ? (parseInt(n_live)-1)*p.extra : 0);
             var finalAmt = singleTotal * qty;
-            
             var d = state.currentDate;
             if(!state.allLogs[d]) state.allLogs[d] = [];
             state.allLogs[d].push({ id: Date.now(), amt: finalAmt, text: name + " " + plat + "直播(" + n_live + "人)" + (qty>1?" (x"+qty+")":"") });
             refresh();
+        }
+    }
+
+    function addC() {
+        var name = document.getElementById('c-name').value;
+        var buyDate = document.getElementById('c-buy-date').value;
+        var eventDate = document.getElementById('c-event-date').value;
+        var seat = document.getElementById('c-seat').value;
+        var price = parseInt(document.getElementById('c-ticket').value) || 0;
+        var fee = parseInt(document.getElementById('c-fee').value) || 0;
+        
+        if(!name) { alert("請輸入演唱會名稱"); return; }
+        
+        var totalCost = price + fee;
+        state.concertLogs.push({
+            id: Date.now(),
+            name: name,
+            buyDate: buyDate,
+            eventDate: eventDate,
+            seat: seat,
+            price: price,
+            fee: fee,
+            totalCost: totalCost
+        });
+
+        // 清空欄位
+        ["c-name", "c-buy-date", "c-event-date", "c-seat", "c-ticket", "c-fee"].forEach(id => document.getElementById(id).value = "");
+        
+        refresh();
+        renderC();
+    }
+
+    function renderC() {
+        var h = "";
+        for(var i=state.concertLogs.length-1; i>=0; i--) {
+            var c = state.concertLogs[i];
+            h += `
+            <div class="card ticket">
+                <span class="del-btn" onclick="delC(${c.id})">✖</span>
+                <div class="ticket-header">
+                    <b style="font-size:16px; color:#333;">✨ ${c.name}</b>
+                </div>
+                <div class="ticket-body">
+                    📍 <b>座位：</b>${c.seat || '未填寫'}<br>
+                    📅 <b>活動日期：</b>${c.eventDate || '未填寫'}<br>
+                    🎫 <b>買票日期：</b>${c.buyDate || '未填寫'}<br>
+                    💰 <b>明細：</b>票價 $${c.price.toLocaleString()} + 手續費 $${c.fee.toLocaleString()}
+                    <span class="ticket-price">總計 -$${c.totalCost.toLocaleString()}</span>
+                </div>
+            </div>`;
+        }
+        document.getElementById('c-list').innerHTML = h || '<div style="color:#ccc;text-align:center;padding:30px;">尚無演唱會紀錄</div>';
+    }
+
+    function delC(id) {
+        if(confirm("確定要刪除這筆演唱會紀錄嗎？")) {
+            state.concertLogs = state.concertLogs.filter(function(c){ return c.id !== id; });
+            refresh();
+            renderC();
         }
     }
 
@@ -153,7 +231,7 @@
         for(var d in state.allLogs) {
             state.allLogs[d].forEach(function(l){ inc += l.amt; });
         }
-        state.concertLogs.forEach(function(c){ exp += c.cost; });
+        state.concertLogs.forEach(function(c){ exp += (c.totalCost || 0); });
         state.total = inc - exp;
         localStorage.setItem('SVT_FINAL_STABLE_V1', JSON.stringify(state));
         updateUI();
@@ -175,32 +253,6 @@
         refresh();
     }
 
-    function addC() {
-        var n = document.getElementById('c-name').value;
-        var c = parseInt(document.getElementById('c-cost').value) || 0;
-        if(!n) return;
-        state.concertLogs.push({ id: Date.now(), name: n, cost: c });
-        document.getElementById('c-name').value = "";
-        document.getElementById('c-cost').value = "";
-        refresh();
-        renderC();
-    }
-
-    function renderC() {
-        var h = "";
-        for(var i=state.concertLogs.length-1; i>=0; i--) {
-            var c = state.concertLogs[i];
-            h += '<div class="member-box" style="border-left:6px solid gold;"><b>'+c.name+'</b><span style="color:red;float:right;padding:5px;" onclick="delC('+c.id+')">✖</span><br><b style="color:#e84393;font-size:18px;">-$'+c.cost.toLocaleString()+'</b></div>';
-        }
-        document.getElementById('c-list').innerHTML = h;
-    }
-
-    function delC(id) {
-        state.concertLogs = state.concertLogs.filter(function(c){ return c.id !== id; });
-        refresh();
-        renderC();
-    }
-
     function changeDate() { state.currentDate = document.getElementById('dateInput').value; updateUI(); }
 
     window.onload = function() {
@@ -213,7 +265,7 @@
             var isVip = (m.en === "Wonwoo");
             var p = isVip ? prices.wonwoo : prices.others;
             var div = document.createElement('div');
-            div.className = 'member-box';
+            div.className = 'card';
             var btns = 
                 '<button class="btn" onclick="add(\''+m.en+'\',\'WVS發文\','+p.w_p+')">WVS發文</button>' +
                 '<button class="btn" onclick="add(\''+m.en+'\',\'WVS留言\','+p.w_m+')">WVS留言</button>' +
@@ -223,8 +275,7 @@
                 '<button class="btn" onclick="add(\''+m.en+'\',\'IG限動\','+p.i_s+')">IG限動</button>' +
                 '<button class="btn btn-yellow" onclick="live(\''+m.en+'\','+isVip+',\'IG\')">IG直播</button>';
             if(isVip) btns += '<button class="btn btn-purple" onclick="add(\''+m.en+'\',\'IG攝影帳\','+p.i_photo+')">IG攝影帳</button>';
-            
-            div.innerHTML = '<div class="member-title">' + m.en + ' <span class="ko-name">' + m.ko + '</span> ' + (isVip?'💜':'') + '</div><div class="grid">'+btns+'</div>';
+            div.innerHTML = '<div class="card-title">' + m.en + ' <span class="ko-name">' + m.ko + '</span> ' + (isVip?'💜':'') + '</div><div class="grid">'+btns+'</div>';
             list.appendChild(div);
         });
         refresh();
