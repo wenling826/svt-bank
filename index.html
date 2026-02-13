@@ -3,182 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SVT Dream Bank 2026</title>
+    <title>SVT Dream Bank</title>
     <style>
-        :root { --rose: #F7CAC9; --serenity: #92A8D1; --purple: #d1d1ff; --gold: #fff3cd; --text: #444; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-        body { font-family: -apple-system, "PingFang TC", sans-serif; background: #fcfafb; margin: 0; padding-bottom: 140px; color: var(--text); }
+        /* 基礎樣式重置 */
+        body { font-family: sans-serif; background-color: #fdfbfb; margin: 0; padding-bottom: 120px; color: #333; -webkit-user-select: none; }
         
-        /* 標頭 */
-        .header-fixed { position: sticky; top: 0; z-index: 1000; background: linear-gradient(to right, #f7cac9, #92a8d1); color: white; padding: 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        h1 { margin: 0; font-size: 19px; letter-spacing: 1px; }
+        /* 標頭：玫瑰石英與寧靜藍 */
+        .header { background: linear-gradient(to right, #F7CAC9, #92A8D1); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { margin: 0; font-size: 18px; }
 
-        /* 總額與日期區 */
-        .top-info { background: white; margin: 12px; padding: 15px; border-radius: 15px; border: 2px solid var(--rose); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        #totalDisplay { font-size: 26px; font-weight: bold; color: #e84393; }
+        /* 總額顯示 */
+        .total-card { background: white; margin: 10px; padding: 15px; border-radius: 15px; border: 2px solid #F7CAC9; display: flex; justify-content: space-between; align-items: center; }
+        .amount { color: #e84393; font-size: 24px; font-weight: bold; }
 
-        /* --- 新增：倍數選擇器 --- */
-        .qty-selector { background: #eee; margin: 0 12px 15px; padding: 5px; border-radius: 12px; display: flex; gap: 5px; align-items: center; }
-        .qty-label { font-size: 12px; font-weight: bold; color: #777; padding: 0 8px; }
-        .qty-btn { flex: 1; border: none; padding: 8px; border-radius: 8px; background: white; font-size: 14px; cursor: pointer; transition: 0.2s; color: #555; }
-        .qty-btn.active { background: var(--serenity); color: white; font-weight: bold; }
+        /* 倍數選擇器 (變大更好按) */
+        .qty-bar { background: #eee; margin: 10px; padding: 5px; border-radius: 10px; display: flex; align-items: center; }
+        .qty-btn { flex: 1; padding: 10px; border: none; background: white; margin: 2px; border-radius: 8px; font-weight: bold; font-size: 16px; }
+        .qty-active { background: #92A8D1; color: white; }
 
-        /* 成員卡片排版 */
-        .member-card { background: white; margin: 0 12px 20px; padding: 18px; border-radius: 20px; border: 1px solid #f0f0f0; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
-        .member-name { font-size: 18px; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f9f9f9; padding-bottom: 8px; }
+        /* 成員卡片 */
+        .card { background: white; margin: 15px 10px; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .name { font-size: 18px; font-weight: bold; margin-bottom: 12px; border-bottom: 2px solid #f9f9f9; padding-bottom: 5px; }
         
-        /* 按鈕網格與顏色 */
-        .btn-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .btn-action { 
-            padding: 14px 5px; background: #fff; border: 1px solid #eee; border-radius: 12px; 
-            font-size: 14px; color: #555; font-weight: 500; cursor: pointer; transition: 0.1s;
-        }
-        .btn-action:active { transform: scale(0.95); background: #f0f0f0; }
-        
-        /* 強制按鈕顏色 */
-        #btn-live-wvs, #btn-live-ig { background-color: #fff9db !important; border-color: #f1c40f !important; color: #d35400 !important; font-weight: bold; }
-        #btn-ig-photo { background-color: #f5f6fa !important; border-color: #9b59b6 !important; color: #9b59b6 !important; font-weight: bold; }
+        /* 按鈕網格 */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { padding: 12px 5px; border-radius: 10px; border: 1px solid #eee; background: white; font-size: 14px; cursor: pointer; }
+        .btn:active { background: #f0f0f0; transform: scale(0.98); }
 
-        /* 特效與動畫 */
-        .plus-money { position: absolute; color: #e84393; font-weight: bold; animation: floatUp 0.8s forwards; z-index: 1000; pointer-events: none; }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-40px); } }
+        /* 指定按鈕顏色 (直接寫死) */
+        .btn-live { background-color: #fff9db !important; border-color: #f1c40f !important; color: #d35400 !important; font-weight: bold; }
+        .btn-photo { background-color: #f3ebff !important; border-color: #9b59b6 !important; color: #9b59b6 !important; font-weight: bold; }
 
-        /* 明細區域 */
-        .log-area { margin: 15px 12px; background: #f8f9fa; padding: 18px; border-radius: 15px; }
-        .day-total-tag { background: linear-gradient(135deg, var(--rose), var(--serenity)); color: white; padding: 8px 16px; border-radius: 20px; margin-bottom: 15px; font-size: 14px; display: inline-block; }
-        .log-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed #ddd; font-size: 14px; }
+        /* 紀錄區 */
+        .log-box { background: #f8f9fa; margin: 10px; padding: 15px; border-radius: 15px; }
+        .log-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #ccc; font-size: 14px; }
 
-        /* 演唱會樣式 */
-        .concert-form { background: white; margin: 12px; padding: 20px; border-radius: 20px; border: 2px solid var(--serenity); }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 12px; color: #888; margin-bottom: 4px; }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; font-size: 15px; }
+        /* 底部選單 */
+        .nav { position: fixed; bottom: 0; width: 100%; background: white; padding: 10px 10px 30px 10px; display: flex; gap: 10px; border-top: 1px solid #eee; }
+        .nav-btn { flex: 1; padding: 15px; border-radius: 30px; border: none; font-weight: bold; font-size: 16px; text-align: center; }
+        .nav-save { background: #F7CAC9; color: white; }
+        .nav-con { background: white; border: 1px solid #92A8D1; color: #92A8D1; }
 
-        /* 底部導航 */
-        .footer { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.95); padding: 10px 20px 30px 20px; border-top: 1px solid #eee; backdrop-filter: blur(10px); display: flex; gap: 12px; z-index: 2000; }
-        .nav-btn { flex: 1; padding: 14px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; }
-        .btn-main { background: var(--rose); color: white; box-shadow: 0 4px 10px rgba(247,202,201,0.5); }
-        .btn-sub { background: white; border: 1px solid var(--serenity); color: var(--serenity); }
-        
-        .view-section { display: none; }
-        .view-active { display: block; }
+        /* 隱藏區塊 */
+        .hidden { display: none; }
+
+        /* 飄浮動畫 */
+        .pop { position: absolute; color: #e84393; font-weight: bold; animation: up 0.8s forwards; pointer-events: none; }
+        @keyframes up { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-30px); } }
     </style>
 </head>
 <body>
 
-<div class="header-fixed"><h1 id="pageTitle">💎 2026 SVT Dream Bank</h1></div>
+<div class="header"><h1>💎 2026 SVT Dream Bank</h1></div>
 
-<div class="top-info">
-    <div id="dateSection"><input type="date" id="dateInput" onchange="updateDate()" style="border:none; font-size:16px; outline:none;"></div>
-    <div id="countSection" style="display:none; color:var(--purple); font-weight:bold;">見面次數：<span id="meetCount">0</span></div>
-    <div id="totalDisplay">$0</div>
+<div class="total-card">
+    <input type="date" id="dateInput" onchange="updateDate()" style="font-size: 16px; border:none; background:transparent;">
+    <div class="amount">$<span id="totalDisplay">0</span></div>
 </div>
 
-<div id="saveView" class="view-section view-active">
-    <div class="qty-selector">
-        <div class="qty-label">一次記幾則？</div>
-        <button class="qty-btn active" onclick="setQty(1, this)">1</button>
+<div id="savePage">
+    <div class="qty-bar">
+        <span style="font-size:12px; margin-right:5px; color:#666;">倍數</span>
+        <button class="qty-btn qty-active" onclick="setQty(1, this)">1</button>
         <button class="qty-btn" onclick="setQty(3, this)">3</button>
         <button class="qty-btn" onclick="setQty(5, this)">5</button>
         <button class="qty-btn" onclick="setQty(10, this)">10</button>
-        <button class="qty-btn" onclick="askQty(this)">自訂</button>
     </div>
-
     <div id="memberList"></div>
-    
-    <div class="log-area">
-        <div style="font-weight:bold; margin-bottom:12px; color:#888;">📋 今日明細</div>
+    <div class="log-box">
+        <div style="font-weight:bold; color:#888; margin-bottom:10px;">📋 今日明細</div>
         <div id="logList"></div>
     </div>
 </div>
 
-<div id="concertView" class="view-section">
-    <div class="concert-form">
-        <div class="form-group"><label>演唱會名稱</label><input type="text" id="c_name" placeholder="FOLLOW AGAIN"></div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <div class="form-group"><label>買票日</label><input type="date" id="c_buyDate"></div>
-            <div class="form-group"><label>活動日</label><input type="date" id="c_showDate"></div>
-        </div>
-        <div class="form-group"><label>座位</label><input type="text" id="c_seat" placeholder="VIP A2"></div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <div class="form-group"><label>票價</label><input type="number" id="c_price" placeholder="5800"></div>
-            <div class="form-group"><label>手續費</label><input type="number" id="c_fee" placeholder="150"></div>
-        </div>
-        <button class="nav-btn btn-main" style="width:100%; margin-top:10px;" onclick="addConcert()">確認儲存並扣款</button>
+<div id="concertPage" class="hidden">
+    <div class="card" style="border: 2px solid #92A8D1;">
+        <p style="text-align:center; font-weight:bold; color:#92A8D1;">🎟️ 登記演唱會支出</p>
+        <input type="text" id="c_name" placeholder="演唱會名稱" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
+        <input type="date" id="c_date" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
+        <input type="number" id="c_cost" placeholder="票價+手續費 (總額)" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
+        <button onclick="addConcert()" style="width:100%; padding:15px; background:#92A8D1; color:white; border:none; border-radius:10px; font-weight:bold;">確認扣款</button>
     </div>
-    <div id="concertList" style="margin-bottom: 30px;"></div>
+    <div id="concertList"></div>
 </div>
 
-<div class="footer">
-    <button id="btnToSave" class="nav-btn btn-main" onclick="switchView('save')">💰 存錢</button>
-    <button id="btnToConcert" class="nav-btn btn-sub" onclick="switchView('concert')">🎟️ 成就</button>
+<div class="nav">
+    <button class="nav-btn nav-save" id="btn1" onclick="go(1)">💰 存錢</button>
+    <button class="nav-btn nav-con" id="btn2" onclick="go(2)">🎟️ 成就</button>
 </div>
 
 <script>
     let currentQty = 1;
+    let state = { total: 0, currentDate: new Date().toISOString().split('T')[0], allLogs: {}, concertLogs: [] };
+
     const prices = {
         wonwoo: { w_p: 50, w_m: 20, w_s: 30, w_l: 200, i_p: 50, i_s: 30, i_photo: 50, i_live: 200, extra: 10 },
         others: { w_p: 20, w_m: 10, w_s: 10, w_l: 50, i_p: 20, i_s: 10, i_live: 50, extra: 10 }
     };
-    const members = [
-        {en:"S.coups", ko:"승철", vip:false}, {en:"Jeonghan", ko:"정한", vip:false},
-        {en:"Joshua", ko:"지수", vip:false}, {en:"Jun", ko:"준휘", vip:false},
-        {en:"Hoshi", ko:"순영", vip:false}, {en:"Wonwoo", ko:"원우", vip:true},
-        {en:"Woozi", ko:"지훈", vip:false}, {en:"The8", ko:"명호", vip:false},
-        {en:"Mingyu", ko:"민규", vip:false}, {en:"DK", ko:"석민", vip:false},
-        {en:"Seungkwan", ko:"승관", vip:false}, {en:"Vernon", ko:"한솔", vip:false},
-        {en:"Dino", ko:"찬", vip:false}
-    ];
 
-    let state = { total: 0, currentDate: new Date().toISOString().split('T')[0], allLogs: {}, concertLogs: [] };
+    const members = ["S.coups", "Jeonghan", "Joshua", "Jun", "Hoshi", "Wonwoo", "Woozi", "The8", "Mingyu", "DK", "Seungkwan", "Vernon", "Dino"];
 
-    // --- 倍數選擇邏輯 ---
-    function setQty(val, btn) {
-        currentQty = val;
-        document.querySelectorAll('.qty-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+    function setQty(q, btn) {
+        currentQty = q;
+        document.querySelectorAll('.qty-btn').forEach(b => b.classList.remove('qty-active'));
+        btn.classList.add('qty-active');
     }
 
-    function askQty(btn) {
-        const val = prompt("請輸入自定義數量：", "20");
-        if(val && !isNaN(val)) {
-            currentQty = parseInt(val);
-            btn.innerText = `x${val}`;
-            setQty(currentQty, btn);
+    function go(page) {
+        if(page === 1) {
+            document.getElementById('savePage').classList.remove('hidden');
+            document.getElementById('concertPage').classList.add('hidden');
+            document.getElementById('btn1').className = 'nav-btn nav-save';
+            document.getElementById('btn2').className = 'nav-btn nav-con';
+        } else {
+            document.getElementById('savePage').classList.add('hidden');
+            document.getElementById('concertPage').classList.remove('hidden');
+            document.getElementById('btn1').className = 'nav-btn nav-con';
+            document.getElementById('btn2').className = 'nav-btn nav-save';
+            renderConcerts();
         }
     }
 
-    // --- 核心邏輯 ---
     function add(name, act, price, event) {
-        const totalAdd = price * currentQty;
+        const amt = price * currentQty;
         const dk = state.currentDate;
-        if (!state.allLogs[dk]) state.allLogs[dk] = [];
+        if(!state.allLogs[dk]) state.allLogs[dk] = [];
+        state.allLogs[dk].push({ id: Date.now(), amt: amt, text: name + " " + act + (currentQty>1?"(x"+currentQty+")":"") });
         
-        const label = currentQty > 1 ? `${act} (x${currentQty})` : act;
-        state.allLogs[dk].push({ id: Date.now(), amt: totalAdd, text: `${name} ${label}` });
-        
-        if(event) triggerEffect(event.currentTarget, totalAdd);
-        recalculateTotal();
+        if(event) {
+            const rect = event.target.getBoundingClientRect();
+            const p = document.createElement('div');
+            p.className = 'pop';
+            p.innerText = "+$" + amt;
+            p.style.left = rect.left + "px";
+            p.style.top = (rect.top + window.scrollY) + "px";
+            document.body.appendChild(p);
+            setTimeout(()=>p.remove(), 800);
+        }
+        recalc();
     }
 
-    function triggerEffect(el, amt) {
-        const rect = el.getBoundingClientRect();
-        const div = document.createElement('div');
-        div.className = 'plus-money';
-        div.innerText = `+$${amt}`;
-        div.style.left = `${rect.left + rect.width/2}px`;
-        div.style.top = `${rect.top + window.scrollY}px`;
-        document.body.appendChild(div);
-        setTimeout(() => div.remove(), 800);
-    }
-
-    function recalculateTotal() {
-        let income = 0;
-        let expense = 0;
+    function recalc() {
+        let income = 0, expense = 0;
         Object.keys(state.allLogs).forEach(d => {
             state.allLogs[d].forEach(l => income += l.amt);
         });
-        state.concertLogs.forEach(c => expense += c.totalCost);
+        state.concertLogs.forEach(c => expense += c.cost);
         state.total = income - expense;
         save();
     }
@@ -189,87 +159,60 @@
     }
 
     function updateUI() {
-        document.getElementById('totalDisplay').innerText = `$${state.total.toLocaleString()}`;
+        document.getElementById('totalDisplay').innerText = state.total.toLocaleString();
         document.getElementById('dateInput').value = state.currentDate;
-        renderLogs();
-    }
-
-    function renderLogs() {
         const div = document.getElementById('logList');
         const logs = state.allLogs[state.currentDate] || [];
-        const dayTotal = logs.reduce((s, l) => s + l.amt, 0);
-        const headerHtml = dayTotal > 0 ? `<div class="day-total-tag">💰 今日小計：NT$ ${dayTotal.toLocaleString()}</div>` : '';
-        div.innerHTML = headerHtml + logs.map(l => `
+        div.innerHTML = logs.map(l => `
             <div class="log-item">
                 <span>${l.text} ($${l.amt})</span>
-                <span style="color:#ff7675; font-weight:bold; cursor:pointer;" onclick="undo(${l.id})">✖</span>
+                <b style="color:red;" onclick="undo(${l.id})">✖</b>
             </div>
         `).reverse().join('');
     }
 
     function undo(id) {
-        const logs = state.allLogs[state.currentDate];
-        const idx = logs.findIndex(l => l.id === id);
-        if(idx !== -1) { logs.splice(idx, 1); recalculateTotal(); }
-    }
-
-    function switchView(mode) {
-        const isSave = mode === 'save';
-        document.getElementById('saveView').classList.toggle('view-active', isSave);
-        document.getElementById('concertView').classList.toggle('view-active', !isSave);
-        document.getElementById('btnToSave').className = isSave ? 'nav-btn btn-main' : 'nav-btn btn-sub';
-        document.getElementById('btnToConcert').className = isSave ? 'nav-btn btn-sub' : 'nav-btn btn-main';
-        document.getElementById('dateSection').style.display = isSave ? 'block' : 'none';
-        document.getElementById('countSection').style.display = isSave ? 'none' : 'block';
-        if(!isSave) renderConcerts();
+        state.allLogs[state.currentDate] = state.allLogs[state.currentDate].filter(l => l.id !== id);
+        recalc();
     }
 
     function addConcert() {
         const name = document.getElementById('c_name').value;
-        const price = parseInt(document.getElementById('c_price').value) || 0;
-        const fee = parseInt(document.getElementById('c_fee').value) || 0;
-        const showDate = document.getElementById('c_showDate').value;
-        if(!name || !showDate) { alert("請填寫名稱與日期"); return; }
-        state.concertLogs.push({
-            id: Date.now(), name, showDate, 
-            totalCost: price + fee,
-            seat: document.getElementById('c_seat').value
-        });
-        recalculateTotal();
+        const cost = parseInt(document.getElementById('c_cost').value) || 0;
+        const date = document.getElementById('c_date').value;
+        if(!name || !date) return;
+        state.concertLogs.push({ id: Date.now(), name, cost, date });
+        document.getElementById('c_name').value = '';
+        document.getElementById('c_cost').value = '';
+        recalc();
         renderConcerts();
     }
 
     function renderConcerts() {
         const list = document.getElementById('concertList');
-        document.getElementById('meetCount').innerText = state.concertLogs.length;
         list.innerHTML = state.concertLogs.map(c => `
-            <div class="member-card" style="border-left: 5px solid gold;">
-                <div style="display:flex; justify-content:space-between; font-weight:bold;">
-                    <span>✨ ${c.name}</span>
-                    <span style="color:red;" onclick="deleteConcert(${c.id})">✖</span>
-                </div>
-                <div style="font-size:13px; color:#777; margin-top:5px;">📅 ${c.showDate} | 📍 ${c.seat}</div>
-                <div style="text-align:right; color:#e84393; font-weight:bold;">-$${c.totalCost.toLocaleString()}</div>
+            <div class="card" style="border-left:5px solid gold;">
+                <b>✨ ${c.name}</b> <small onclick="delC(${c.id})" style="color:red;float:right;">✖</small><br>
+                <small>${c.date}</small> <b style="float:right;color:#e84393;">-$${c.cost.toLocaleString()}</b>
             </div>
         `).reverse().join('');
     }
 
-    function deleteConcert(id) {
+    function delC(id) {
         state.concertLogs = state.concertLogs.filter(c => c.id !== id);
-        recalculateTotal();
+        recalc();
         renderConcerts();
     }
 
-    function updateDate() { state.currentDate = document.getElementById('dateInput').value; save(); }
+    function updateDate() { state.currentDate = document.getElementById('dateInput').value; updateUI(); }
 
-    function handleLive(idx, plat, event) {
-        const m = members[idx];
-        const p = m.vip ? prices.wonwoo : prices.others;
-        const n = prompt(`【${m.en}】${plat}直播人數？`, "1");
+    function handleLive(name, isVip, plat) {
+        const p = isVip ? prices.wonwoo : prices.others;
+        const n = prompt(name + " " + plat + "直播人數？", "1");
         if(n) {
-            let base = (plat === 'WVS' ? p.w_l : p.i_live);
-            let total = parseInt(base) + (parseInt(n)>1 ? (parseInt(n)-1)*p.extra : 0);
-            add(m.en, `${plat}直播(${n}人)`, total, event);
+            const base = (plat === 'WVS' ? p.w_l : p.i_live);
+            const total = parseInt(base) + (parseInt(n)>1 ? (parseInt(n)-1)*p.extra : 0);
+            add(name, plat + "直播(" + n + "人)", total);
         }
     }
 
@@ -277,24 +220,24 @@
         const saved = localStorage.getItem('SVT_FINAL_STABLE_V1');
         if(saved) state = JSON.parse(saved);
         if(!state.concertLogs) state.concertLogs = [];
-        state.currentDate = new Date().toISOString().split('T')[0];
-
+        
         const list = document.getElementById('memberList');
-        members.forEach((m, i) => {
-            const p = m.vip ? prices.wonwoo : prices.others;
+        members.forEach(m => {
+            const isVip = (m === "Wonwoo");
+            const p = isVip ? prices.wonwoo : prices.others;
             const card = document.createElement('div');
-            card.className = 'member-card';
+            card.className = 'card';
             card.innerHTML = `
-                <div class="member-name">${m.en} <small style="color:#999; font-weight:normal;">${m.ko}</small> ${m.vip?'💜':''}</div>
-                <div class="btn-grid">
-                    <button class="btn-action" onclick="add('${m.en}','WVS發文',${p.w_p},event)">WVS發文</button>
-                    <button class="btn-action" onclick="add('${m.en}','WVS留言',${p.w_m},event)">WVS留言</button>
-                    <button class="btn-action" onclick="add('${m.en}','WVS限動',${p.w_s},event)">WVS限動</button>
-                    <button id="btn-live-wvs" class="btn-action" onclick="handleLive(${i},'WVS',event)">WVS直播</button>
-                    <button class="btn-action" onclick="add('${m.en}','IG發文',${p.i_p},event)">IG發文</button>
-                    <button class="btn-action" onclick="add('${m.en}','IG限動',${p.i_s},event)">IG限動</button>
-                    <button id="btn-live-ig" class="btn-action" onclick="handleLive(${i},'IG',event)">IG直播</button>
-                    ${m.vip ? `<button id="btn-ig-photo" class="btn-action" onclick="add('${m.en}','IG攝影帳',${p.i_photo},event)">IG攝影帳</button>` : ''}
+                <div class="name">${m} ${isVip?'💜':''}</div>
+                <div class="grid">
+                    <button class="btn" onclick="add('${m}','WVS發文',${p.w_p},event)">WVS發文</button>
+                    <button class="btn" onclick="add('${m}','WVS留言',${p.w_m},event)">WVS留言</button>
+                    <button class="btn" onclick="add('${m}','WVS限動',${p.w_s},event)">WVS限動</button>
+                    <button class="btn btn-live" onclick="handleLive('${m}',${isVip},'WVS')">WVS直播</button>
+                    <button class="btn" onclick="add('${m}','IG發文',${p.i_p},event)">IG發文</button>
+                    <button class="btn" onclick="add('${m}','IG限動',${p.i_s},event)">IG限動</button>
+                    <button class="btn btn-live" onclick="handleLive('${m}',${isVip},'IG')">IG直播</button>
+                    ${isVip ? `<button class="btn btn-photo" onclick="add('${m}','IG攝影帳',${p.i_photo},event)">IG攝影帳</button>` : ''}
                 </div>
             `;
             list.appendChild(card);
