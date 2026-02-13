@@ -10,7 +10,7 @@
         :root { --rose: #F7CAC9; --serenity: #92A8D1; --text-gray: #8e8e93; }
         body { font-family: -apple-system, system-ui, sans-serif; background: #fdfbfb; margin: 0; padding-bottom: 140px; user-select: none; -webkit-user-select: none; }
         
-        /* 標頭：避開動態島 */
+        /* 標頭適配動態島 */
         .header { background: linear-gradient(to right, var(--rose), var(--serenity)); color: white; padding: 55px 15px 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .header h1 { margin: 0; font-size: 18px; font-weight: 800; }
 
@@ -19,10 +19,10 @@
         .total-val { color: #e84393; font-size: 28px; font-weight: 900; }
         #dateInput { border: none; font-size: 16px; font-weight: bold; color: #666; width: 135px; background: transparent; outline: none; }
 
-        /* 倍數列 */
-        .m-bar { background: #f0f0f2; margin: 0 15px 15px; padding: 6px; border-radius: 15px; display: flex; }
-        .m-btn { flex: 1; padding: 12px; border: none; background: white; margin: 3px; border-radius: 12px; font-weight: bold; font-size: 16px; color: #555; transition: 0.2s; }
-        .m-on { background: var(--serenity); color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        /* 自訂倍數列：改為輸入框形式 */
+        .m-bar { background: #f0f0f2; margin: 0 15px 15px; padding: 12px; border-radius: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .m-label { font-size: 15px; font-weight: bold; color: #555; }
+        #customQty { width: 80px; padding: 8px; border: 1.5px solid var(--serenity); border-radius: 10px; text-align: center; font-size: 18px; font-weight: bold; color: var(--serenity); outline: none; }
 
         /* 成員卡片 */
         .member-box { background: white; margin: 15px; padding: 20px; border-radius: 22px; border: 1px solid #efefef; box-shadow: 0 5px 15px rgba(0,0,0,0.04); }
@@ -62,11 +62,10 @@
 
 <div id="save-page">
     <div class="m-bar">
-        <button class="m-btn m-on" onclick="setM(1, this)">1</button>
-        <button class="m-btn" onclick="setM(3, this)">3</button>
-        <button class="m-btn" onclick="setM(5, this)">5</button>
-        <button class="m-btn" onclick="setM(10, this)">10</button>
+        <span class="m-label">本次存錢次數：</span>
+        <input type="number" id="customQty" value="1" min="1" onchange="checkQty()">
     </div>
+
     <div id="m-list"></div>
     <div class="logs">
         <div style="font-weight:bold; color:#999; margin-bottom:10px;">📋 今日明細</div>
@@ -90,14 +89,12 @@
 </div>
 
 <script>
-    var currentM = 1;
     var state = { total: 0, currentDate: new Date().toISOString().split('T')[0], allLogs: {}, concertLogs: [] };
     var prices = {
         wonwoo: { w_p: 50, w_m: 20, w_s: 30, w_l: 200, i_p: 50, i_s: 30, i_photo: 50, i_live: 200, extra: 10 },
         others: { w_p: 20, w_m: 10, w_s: 10, w_l: 50, i_p: 20, i_s: 10, i_live: 50, extra: 10 }
     };
     
-    // 補回韓文名字數據
     var members = [
         {en:"S.coups", ko:"승철"}, {en:"Jeonghan", ko:"정한"}, {en:"Joshua", ko:"지수"},
         {en:"Jun", ko:"준휘"}, {en:"Hoshi", ko:"순영"}, {en:"Wonwoo", ko:"원우"},
@@ -106,10 +103,9 @@
         {en:"Dino", ko:"찬"}
     ];
 
-    function setM(v, b) {
-        currentM = v;
-        document.querySelectorAll('.m-btn').forEach(function(x){ x.classList.remove('m-on'); });
-        b.classList.add('m-on');
+    function checkQty() {
+        var input = document.getElementById('customQty');
+        if (input.value < 1) input.value = 1;
     }
 
     function tab(p) {
@@ -128,20 +124,27 @@
     }
 
     function add(name, act, p) {
-        var amt = p * currentM;
+        var qty = parseInt(document.getElementById('customQty').value) || 1;
+        var amt = p * qty;
         var d = state.currentDate;
         if(!state.allLogs[d]) state.allLogs[d] = [];
-        state.allLogs[d].push({ id: Date.now(), amt: amt, text: name + " " + act + (currentM>1?"(x"+currentM+")":"") });
+        state.allLogs[d].push({ id: Date.now(), amt: amt, text: name + " " + act + (qty>1?" (x"+qty+")":"") });
         refresh();
     }
 
     function live(name, isVip, plat) {
         var p = isVip ? prices.wonwoo : prices.others;
-        var n = prompt(name + " " + plat + "直播人數？", "1");
-        if(n) {
+        var n_live = prompt(name + " " + plat + "直播人數？", "1");
+        if(n_live) {
+            var qty = parseInt(document.getElementById('customQty').value) || 1;
             var base = (plat === 'WVS' ? p.w_l : p.i_live);
-            var total = parseInt(base) + (parseInt(n)>1 ? (parseInt(n)-1)*p.extra : 0);
-            add(name, plat + "直播(" + n + "人)", total);
+            var singleTotal = parseInt(base) + (parseInt(n_live)>1 ? (parseInt(n_live)-1)*p.extra : 0);
+            var finalAmt = singleTotal * qty;
+            
+            var d = state.currentDate;
+            if(!state.allLogs[d]) state.allLogs[d] = [];
+            state.allLogs[d].push({ id: Date.now(), amt: finalAmt, text: name + " " + plat + "直播(" + n_live + "人)" + (qty>1?" (x"+qty+")":"") });
+            refresh();
         }
     }
 
@@ -221,7 +224,6 @@
                 '<button class="btn btn-yellow" onclick="live(\''+m.en+'\','+isVip+',\'IG\')">IG直播</button>';
             if(isVip) btns += '<button class="btn btn-purple" onclick="add(\''+m.en+'\',\'IG攝影帳\','+p.i_photo+')">IG攝影帳</button>';
             
-            // 加上韓文顯示
             div.innerHTML = '<div class="member-title">' + m.en + ' <span class="ko-name">' + m.ko + '</span> ' + (isVip?'💜':'') + '</div><div class="grid">'+btns+'</div>';
             list.appendChild(div);
         });
