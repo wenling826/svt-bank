@@ -2,251 +2,231 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SVT Dream Bank 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>SVT Dream Bank</title>
     <style>
-        /* 基礎設置 */
-        body { font-family: -apple-system, sans-serif; background-color: #fcfafb; margin: 0; padding-bottom: 120px; -webkit-user-select: none; }
+        :root { --rose: #F7CAC9; --serenity: #92A8D1; --text-gray: #8e8e93; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: #fdfbfb; margin: 0; padding-bottom: 140px; user-select: none; -webkit-user-select: none; }
         
-        /* 頂部粉藍漸層 */
-        .header { background: linear-gradient(to right, #F7CAC9, #92A8D1); color: white; padding: 20px 15px; text-align: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .header h1 { margin: 0; font-size: 18px; letter-spacing: 1px; }
+        /* 標頭：避開動態島 */
+        .header { background: linear-gradient(to right, var(--rose), var(--serenity)); color: white; padding: 55px 15px 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header h1 { margin: 0; font-size: 18px; font-weight: 800; }
 
-        /* 金額與日期區 */
-        .status-bar { background: white; margin: 12px; padding: 18px; border-radius: 15px; border: 2px solid #F7CAC9; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .total-money { color: #e84393; font-size: 26px; font-weight: bold; }
-        #dateInput { border: none; font-size: 16px; color: #666; font-weight: bold; width: 130px; }
+        /* 總額卡片 */
+        .top-card { background: white; margin: 15px; padding: 20px; border-radius: 20px; border: 2.5px solid var(--rose); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .total-val { color: #e84393; font-size: 28px; font-weight: 900; }
+        #dateInput { border: none; font-size: 16px; font-weight: bold; color: #666; width: 135px; background: transparent; outline: none; }
 
-        /* 倍數切換器 */
-        .multiplier-box { background: #eee; margin: 0 12px 15px; padding: 6px; border-radius: 12px; display: flex; align-items: center; }
-        .m-btn { flex: 1; padding: 12px; border: none; background: white; margin: 3px; border-radius: 8px; font-weight: bold; font-size: 16px; color: #555; }
-        .m-active { background: #92A8D1; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        /* 倍數列 */
+        .m-bar { background: #f0f0f2; margin: 0 15px 15px; padding: 6px; border-radius: 15px; display: flex; }
+        .m-btn { flex: 1; padding: 12px; border: none; background: white; margin: 3px; border-radius: 12px; font-weight: bold; font-size: 16px; color: #555; transition: 0.2s; }
+        .m-on { background: var(--serenity); color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
-        /* 成員卡片排版 */
-        .member-card { background: white; margin: 15px 12px; padding: 20px; border-radius: 18px; border: 1px solid #eee; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .member-name { font-size: 19px; font-weight: bold; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; }
+        /* 成員卡片 */
+        .member-box { background: white; margin: 15px; padding: 20px; border-radius: 22px; border: 1px solid #efefef; box-shadow: 0 5px 15px rgba(0,0,0,0.04); }
+        .member-title { font-size: 19px; font-weight: bold; margin-bottom: 15px; display: flex; align-items: baseline; gap: 8px; }
+        .ko-name { font-size: 14px; color: var(--text-gray); font-weight: normal; }
         
         /* 按鈕網格 */
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .action-btn { padding: 15px 5px; border-radius: 12px; border: 1px solid #f0f0f0; background: #fff; font-size: 14px; font-weight: 500; color: #555; cursor: pointer; }
-        .action-btn:active { background: #f9f9f9; transform: scale(0.96); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .btn { padding: 16px 5px; border-radius: 14px; border: 1px solid #f2f2f2; background: #fff; font-size: 14px; font-weight: 600; color: #444; -webkit-appearance: none; }
+        .btn:active { background: #f0f0f0; transform: scale(0.96); }
 
-        /* 特殊按鈕顏色 (確保在手機上清晰) */
-        .btn-live { background-color: #FFF9C4 !important; border-color: #FBC02D !important; color: #F57F17 !important; font-weight: bold; }
-        .btn-photo { background-color: #F3E5F5 !important; border-color: #9C27B0 !important; color: #9C27B0 !important; font-weight: bold; }
+        /* 強制顏色標籤 */
+        .btn-yellow { background-color: #FFF9C4 !important; border-color: #FBC02D !important; color: #F57F17 !important; }
+        .btn-purple { background-color: #F3E5F5 !important; border-color: #9C27B0 !important; color: #9C27B0 !important; }
 
-        /* 紀錄明細 */
-        .log-section { background: #fdfdfd; margin: 15px 12px; padding: 15px; border-radius: 15px; border: 1px dashed #ddd; }
-        .log-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+        /* 明細 */
+        .logs { background: #fafafa; margin: 15px; padding: 15px; border-radius: 15px; border: 1px dashed #ddd; }
+        .log-line { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
 
         /* 底部導航 */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; padding: 12px 12px 30px; display: flex; gap: 12px; border-top: 1px solid #eee; z-index: 1000; }
-        .nav-item { flex: 1; padding: 16px; border-radius: 30px; border: none; font-weight: bold; font-size: 16px; text-align: center; }
-        .nav-active { background: #F7CAC9; color: white; box-shadow: 0 4px 12px rgba(247,202,201,0.5); }
-        .nav-inactive { background: white; border: 1px solid #92A8D1; color: #92A8D1; }
+        .footer { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.92); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 15px 15px 40px; display: flex; gap: 12px; border-top: 1px solid #eee; box-sizing: border-box; z-index: 9999; }
+        .f-btn { flex: 1; padding: 16px; border-radius: 30px; border: none; font-weight: bold; font-size: 16px; }
+        .f-on { background: var(--rose); color: white; box-shadow: 0 4px 10px rgba(247,202,201,0.4); }
+        .f-off { background: white; border: 1.5px solid var(--serenity); color: var(--serenity); }
 
         .hidden { display: none; }
-        .pop-text { position: absolute; color: #e84393; font-weight: bold; animation: popUp 0.8s ease-out forwards; pointer-events: none; z-index: 2000; }
-        @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-40px); } }
     </style>
 </head>
 <body>
 
 <div class="header"><h1>💎 2026 SVT Dream Bank</h1></div>
 
-<div class="status-bar">
+<div class="top-card">
     <input type="date" id="dateInput" onchange="changeDate()">
-    <div class="total-money">$<span id="displayTotal">0</span></div>
+    <div class="total-val">$<span id="money">0</span></div>
 </div>
 
-<div id="page-save">
-    <div class="multiplier-box">
-        <span style="font-size:12px; color:#888; padding:0 10px;">倍數</span>
-        <button class="m-btn m-active" onclick="setM(1, this)">1</button>
+<div id="save-page">
+    <div class="m-bar">
+        <button class="m-btn m-on" onclick="setM(1, this)">1</button>
         <button class="m-btn" onclick="setM(3, this)">3</button>
         <button class="m-btn" onclick="setM(5, this)">5</button>
         <button class="m-btn" onclick="setM(10, this)">10</button>
     </div>
-    
-    <div id="memberList"></div>
-
-    <div class="log-section">
-        <div style="font-weight:bold; margin-bottom:10px; color:#999;">📋 今日明細</div>
-        <div id="logContent"></div>
+    <div id="m-list"></div>
+    <div class="logs">
+        <div style="font-weight:bold; color:#999; margin-bottom:10px;">📋 今日明細</div>
+        <div id="log-list"></div>
     </div>
 </div>
 
-<div id="page-concert" class="hidden">
-    <div class="member-card" style="border: 2px solid #92A8D1;">
-        <h3 style="text-align:center; color:#92A8D1; margin-top:0;">🎟️ 新增支出紀錄</h3>
-        <input type="text" id="c_name" placeholder="演唱會/活動名稱" style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
-        <input type="number" id="c_cost" placeholder="支出總金額" style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
-        <button onclick="addConcert()" style="width:100%; padding:15px; background:#92A8D1; color:white; border:none; border-radius:10px; font-weight:bold;">確認存檔並扣款</button>
+<div id="concert-page" class="hidden">
+    <div class="member-box" style="border: 2px solid var(--serenity);">
+        <h3 style="margin-top:0; color:var(--serenity); text-align:center;">🎟️ 新增成就支出</h3>
+        <input type="text" id="c-name" placeholder="活動名稱" style="width:100%; padding:14px; margin-bottom:10px; border:1px solid #ddd; border-radius:12px; box-sizing:border-box; font-size:16px;">
+        <input type="number" id="c-cost" placeholder="支出總金額" style="width:100%; padding:14px; margin-bottom:10px; border:1px solid #ddd; border-radius:12px; box-sizing:border-box; font-size:16px;">
+        <button onclick="addC()" style="width:100%; padding:16px; background:var(--serenity); color:white; border:none; border-radius:15px; font-weight:bold; font-size:16px;">確認扣款</button>
     </div>
-    <div id="concertContent"></div>
+    <div id="c-list"></div>
 </div>
 
-<div class="nav-bar">
-    <button id="nav1" class="nav-item nav-active" onclick="showPage(1)">💰 存錢</button>
-    <button id="nav2" class="nav-item nav-inactive" onclick="showPage(2)">🎟️ 成就</button>
+<div class="footer">
+    <button id="n1" class="f-btn f-on" onclick="tab(1)">💰 存錢</button>
+    <button id="n2" class="f-btn f-off" onclick="tab(2)">🎟️ 成就</button>
 </div>
 
 <script>
-    // 狀態變數
     var currentM = 1;
     var state = { total: 0, currentDate: new Date().toISOString().split('T')[0], allLogs: {}, concertLogs: [] };
-    
-    // 價格表
     var prices = {
         wonwoo: { w_p: 50, w_m: 20, w_s: 30, w_l: 200, i_p: 50, i_s: 30, i_photo: 50, i_live: 200, extra: 10 },
         others: { w_p: 20, w_m: 10, w_s: 10, w_l: 50, i_p: 20, i_s: 10, i_live: 50, extra: 10 }
     };
-    var members = ["S.coups", "Jeonghan", "Joshua", "Jun", "Hoshi", "Wonwoo", "Woozi", "The8", "Mingyu", "DK", "Seungkwan", "Vernon", "Dino"];
+    
+    // 補回韓文名字數據
+    var members = [
+        {en:"S.coups", ko:"승철"}, {en:"Jeonghan", ko:"정한"}, {en:"Joshua", ko:"지수"},
+        {en:"Jun", ko:"준휘"}, {en:"Hoshi", ko:"순영"}, {en:"Wonwoo", ko:"원우"},
+        {en:"Woozi", ko:"지훈"}, {en:"The8", ko:"명호"}, {en:"Mingyu", ko:"민규"},
+        {en:"DK", ko:"석민"}, {en:"Seungkwan", ko:"승관"}, {en:"Vernon", ko:"한솔"},
+        {en:"Dino", ko:"찬"}
+    ];
 
-    // 設定倍數
-    function setM(val, btn) {
-        currentM = val;
-        var btns = document.getElementsByClassName('m-btn');
-        for(var i=0; i<btns.length; i++) btns[i].classList.remove('m-active');
-        btn.classList.add('m-active');
+    function setM(v, b) {
+        currentM = v;
+        document.querySelectorAll('.m-btn').forEach(function(x){ x.classList.remove('m-on'); });
+        b.classList.add('m-on');
     }
 
-    // 切換頁面
-    function showPage(p) {
-        if(p === 1) {
-            document.getElementById('page-save').classList.remove('hidden');
-            document.getElementById('page-concert').classList.add('hidden');
-            document.getElementById('nav1').className = 'nav-item nav-active';
-            document.getElementById('nav2').className = 'nav-item nav-inactive';
+    function tab(p) {
+        if(p===1) {
+            document.getElementById('save-page').classList.remove('hidden');
+            document.getElementById('concert-page').classList.add('hidden');
+            document.getElementById('n1').className='f-btn f-on';
+            document.getElementById('n2').className='f-btn f-off';
         } else {
-            document.getElementById('page-save').classList.add('hidden');
-            document.getElementById('page-concert').classList.remove('hidden');
-            document.getElementById('nav1').className = 'nav-item nav-inactive';
-            document.getElementById('nav2').className = 'nav-item nav-active';
-            renderConcerts();
+            document.getElementById('save-page').classList.add('hidden');
+            document.getElementById('concert-page').classList.remove('hidden');
+            document.getElementById('n1').className='f-btn f-off';
+            document.getElementById('n2').className='f-btn f-on';
+            renderC();
         }
     }
 
-    // 存錢
-    function addMoney(name, act, price, event) {
-        var finalAmt = price * currentM;
-        var today = state.currentDate;
-        if(!state.allLogs[today]) state.allLogs[today] = [];
-        
-        var label = name + " " + act + (currentM > 1 ? " (x" + currentM + ")" : "");
-        state.allLogs[today].push({ id: Date.now(), amt: finalAmt, text: label });
-        
-        if(event) {
-            var rect = event.target.getBoundingClientRect();
-            var p = document.createElement('div');
-            p.className = 'pop-text';
-            p.innerText = "+$" + finalAmt;
-            p.style.left = (rect.left + rect.width/2) + "px";
-            p.style.top = (rect.top + window.scrollY) + "px";
-            document.body.appendChild(p);
-            setTimeout(function(){ p.remove(); }, 800);
-        }
+    function add(name, act, p) {
+        var amt = p * currentM;
+        var d = state.currentDate;
+        if(!state.allLogs[d]) state.allLogs[d] = [];
+        state.allLogs[d].push({ id: Date.now(), amt: amt, text: name + " " + act + (currentM>1?"(x"+currentM+")":"") });
         refresh();
     }
 
-    // 直播處理
-    function handleLive(name, isVip, plat) {
+    function live(name, isVip, plat) {
         var p = isVip ? prices.wonwoo : prices.others;
         var n = prompt(name + " " + plat + "直播人數？", "1");
-        if(n && !isNaN(n)) {
+        if(n) {
             var base = (plat === 'WVS' ? p.w_l : p.i_live);
-            var total = parseInt(base) + (parseInt(n) > 1 ? (parseInt(n)-1)*p.extra : 0);
-            addMoney(name, plat + "直播(" + n + "人)", total);
+            var total = parseInt(base) + (parseInt(n)>1 ? (parseInt(n)-1)*p.extra : 0);
+            add(name, plat + "直播(" + n + "人)", total);
         }
     }
 
-    // 計算總額
     function refresh() {
-        var income = 0;
-        var expense = 0;
+        var inc = 0, exp = 0;
         for(var d in state.allLogs) {
-            state.allLogs[d].forEach(function(l){ income += l.amt; });
+            state.allLogs[d].forEach(function(l){ inc += l.amt; });
         }
-        state.concertLogs.forEach(function(c){ expense += c.cost; });
-        state.total = income - expense;
-        
+        state.concertLogs.forEach(function(c){ exp += c.cost; });
+        state.total = inc - exp;
         localStorage.setItem('SVT_FINAL_STABLE_V1', JSON.stringify(state));
-        updateDisplay();
+        updateUI();
     }
 
-    function updateDisplay() {
-        document.getElementById('displayTotal').innerText = state.total.toLocaleString();
+    function updateUI() {
+        document.getElementById('money').innerText = state.total.toLocaleString();
         document.getElementById('dateInput').value = state.currentDate;
         var logs = state.allLogs[state.currentDate] || [];
-        var html = "";
-        for(var i = logs.length-1; i >= 0; i--) {
-            html += '<div class="log-row"><span>' + logs[i].text + ' ($' + logs[i].amt + ')</span><b style="color:red;" onclick="delLog(' + logs[i].id + ')">✖</b></div>';
+        var h = "";
+        for(var i=logs.length-1; i>=0; i--) {
+            h += '<div class="log-line"><span>'+logs[i].text+' ($'+logs[i].amt+')</span><b style="color:red; padding:5px;" onclick="delL('+logs[i].id+')">✖</b></div>';
         }
-        document.getElementById('logContent').innerHTML = html || '<div style="color:#ccc;text-align:center;padding:20px;">無紀錄</div>';
+        document.getElementById('log-list').innerHTML = h || '<div style="color:#ccc;text-align:center;padding:10px;">尚未有存錢紀錄</div>';
     }
 
-    function delLog(id) {
+    function delL(id) {
         state.allLogs[state.currentDate] = state.allLogs[state.currentDate].filter(function(l){ return l.id !== id; });
         refresh();
     }
 
-    // 演唱會
-    function addConcert() {
-        var name = document.getElementById('c_name').value;
-        var cost = parseInt(document.getElementById('c_cost').value) || 0;
-        if(!name) return;
-        state.concertLogs.push({ id: Date.now(), name: name, cost: cost });
-        document.getElementById('c_name').value = "";
-        document.getElementById('c_cost').value = "";
+    function addC() {
+        var n = document.getElementById('c-name').value;
+        var c = parseInt(document.getElementById('c-cost').value) || 0;
+        if(!n) return;
+        state.concertLogs.push({ id: Date.now(), name: n, cost: c });
+        document.getElementById('c-name').value = "";
+        document.getElementById('c-cost').value = "";
         refresh();
-        renderConcerts();
+        renderC();
     }
 
-    function renderConcerts() {
-        var html = "";
-        for(var i = state.concertLogs.length-1; i >= 0; i--) {
+    function renderC() {
+        var h = "";
+        for(var i=state.concertLogs.length-1; i>=0; i--) {
             var c = state.concertLogs[i];
-            html += '<div class="member-card" style="border-left:5px solid gold;"><b>' + c.name + '</b><span style="color:red;float:right;" onclick="delC(' + c.id + ')">✖</span><br><b style="color:#e84393;font-size:18px;">-$' + c.cost.toLocaleString() + '</b></div>';
+            h += '<div class="member-box" style="border-left:6px solid gold;"><b>'+c.name+'</b><span style="color:red;float:right;padding:5px;" onclick="delC('+c.id+')">✖</span><br><b style="color:#e84393;font-size:18px;">-$'+c.cost.toLocaleString()+'</b></div>';
         }
-        document.getElementById('concertContent').innerHTML = html;
+        document.getElementById('c-list').innerHTML = h;
     }
 
     function delC(id) {
         state.concertLogs = state.concertLogs.filter(function(c){ return c.id !== id; });
         refresh();
-        renderConcerts();
+        renderC();
     }
 
-    function changeDate() { state.currentDate = document.getElementById('dateInput').value; updateDisplay(); }
+    function changeDate() { state.currentDate = document.getElementById('dateInput').value; updateUI(); }
 
-    // 初始化
-    function init() {
+    window.onload = function() {
         var saved = localStorage.getItem('SVT_FINAL_STABLE_V1');
         if(saved) state = JSON.parse(saved);
         if(!state.concertLogs) state.concertLogs = [];
         
-        var list = document.getElementById('memberList');
+        var list = document.getElementById('m-list');
         members.forEach(function(m){
-            var isVip = (m === "Wonwoo");
+            var isVip = (m.en === "Wonwoo");
             var p = isVip ? prices.wonwoo : prices.others;
             var div = document.createElement('div');
-            div.className = 'member-card';
+            div.className = 'member-box';
             var btns = 
-                '<button class="action-btn" onclick="addMoney(\''+m+'\',\'WVS發文\','+p.w_p+',event)">WVS發文</button>' +
-                '<button class="action-btn" onclick="addMoney(\''+m+'\',\'WVS留言\','+p.w_m+',event)">WVS留言</button>' +
-                '<button class="action-btn" onclick="addMoney(\''+m+'\',\'WVS限動\','+p.w_s+',event)">WVS限動</button>' +
-                '<button class="action-btn btn-live" onclick="handleLive(\''+m+'\','+isVip+',\'WVS\')">WVS直播</button>' +
-                '<button class="action-btn" onclick="addMoney(\''+m+'\',\'IG發文\','+p.i_p+',event)">IG發文</button>' +
-                '<button class="action-btn" onclick="addMoney(\''+m+'\',\'IG限動\','+p.i_s+',event)">IG限動</button>' +
-                '<button class="action-btn btn-live" onclick="handleLive(\''+m+'\','+isVip+',\'IG\')">IG直播</button>';
-            if(isVip) btns += '<button class="action-btn btn-photo" onclick="addMoney(\''+m+'\',\'IG攝影帳\','+p.i_photo+',event)">IG攝影帳</button>';
+                '<button class="btn" onclick="add(\''+m.en+'\',\'WVS發文\','+p.w_p+')">WVS發文</button>' +
+                '<button class="btn" onclick="add(\''+m.en+'\',\'WVS留言\','+p.w_m+')">WVS留言</button>' +
+                '<button class="btn" onclick="add(\''+m.en+'\',\'WVS限動\','+p.w_s+')">WVS限動</button>' +
+                '<button class="btn btn-yellow" onclick="live(\''+m.en+'\','+isVip+',\'WVS\')">WVS直播</button>' +
+                '<button class="btn" onclick="add(\''+m.en+'\',\'IG發文\','+p.i_p+')">IG發文</button>' +
+                '<button class="btn" onclick="add(\''+m.en+'\',\'IG限動\','+p.i_s+')">IG限動</button>' +
+                '<button class="btn btn-yellow" onclick="live(\''+m.en+'\','+isVip+',\'IG\')">IG直播</button>';
+            if(isVip) btns += '<button class="btn btn-purple" onclick="add(\''+m.en+'\',\'IG攝影帳\','+p.i_photo+')">IG攝影帳</button>';
             
-            div.innerHTML = '<div class="member-name">' + m + (isVip?' 💜':'') + '</div><div class="btn-grid">' + btns + '</div>';
+            // 加上韓文顯示
+            div.innerHTML = '<div class="member-title">' + m.en + ' <span class="ko-name">' + m.ko + '</span> ' + (isVip?'💜':'') + '</div><div class="grid">'+btns+'</div>';
             list.appendChild(div);
         });
         refresh();
-    }
-    init();
+    };
 </script>
 </body>
 </html>
