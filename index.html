@@ -10,6 +10,7 @@
         :root { --rose: #F7CAC9; --serenity: #92A8D1; --text-gray: #8e8e93; }
         body { font-family: -apple-system, system-ui, sans-serif; background: #fdfbfb; margin: 0; padding-bottom: 140px; user-select: none; -webkit-user-select: none; }
         
+        /* 標頭適配動態島 */
         .header { background: linear-gradient(to right, var(--rose), var(--serenity)); color: white; padding: 55px 15px 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .header h1 { margin: 0; font-size: 18px; font-weight: 800; }
 
@@ -30,11 +31,15 @@
         .btn-yellow { background-color: #FFF9C4 !important; border-color: #FBC02D !important; color: #F57F17 !important; }
         .btn-purple { background-color: #F3E5F5 !important; border-color: #9C27B0 !important; color: #9C27B0 !important; }
 
+        /* 輸入框佈局修正 */
+        .input-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; width: 100%; }
+        .input-item label { font-size: 12px; color: var(--text-gray); font-weight: bold; margin-left: 5px; }
+        .input-item input { padding: 12px; border-radius: 12px; border: 1px solid #ddd; width: 100%; box-sizing: border-box; font-size: 16px; background: #fcfcfc; -webkit-appearance: none; }
+
         .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .day-subtotal { background: var(--rose); color: white; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
 
         .ticket { background: #fff; border-left: 8px solid var(--serenity); position: relative; overflow: hidden; }
-        .ticket::after { content: ''; position: absolute; right: -15px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; background: #fdfbfb; border-radius: 50%; }
         .ticket-price { color: #e84393; font-weight: bold; font-size: 18px; margin-top: 5px; display: block; }
 
         .logs { background: #fafafa; margin: 15px; padding: 15px; border-radius: 15px; border: 1px dashed #ddd; }
@@ -75,19 +80,40 @@
 <div id="concert-page" class="hidden">
     <div class="card" style="border: 2px solid var(--serenity);">
         <h3 style="margin-top:0; color:var(--serenity); text-align:center;">🎟️ 紀錄演唱會支出</h3>
-        <div style="display:flex; flex-direction:column; gap:8px;">
-            <input type="text" id="c-name" placeholder="演唱會名稱" style="padding:12px; border-radius:10px; border:1px solid #ddd;">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <input type="date" id="c-buy-date" style="padding:10px; border-radius:10px; border:1px solid #ddd;">
-                <input type="date" id="c-event-date" style="padding:10px; border-radius:10px; border:1px solid #ddd;">
-            </div>
-            <input type="text" id="c-seat" placeholder="座位 (例: B3 20排)" style="padding:12px; border-radius:10px; border:1px solid #ddd;">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <input type="number" id="c-ticket" placeholder="票價" style="padding:12px; border-radius:10px; border:1px solid #ddd;">
-                <input type="number" id="c-fee" placeholder="手續費" style="padding:12px; border-radius:10px; border:1px solid #ddd;">
-            </div>
-            <button onclick="addC()" style="padding:16px; background:var(--serenity); color:white; border-radius:15px; border:none; font-weight:bold;">確認扣款</button>
+        
+        <div class="input-item">
+            <label>演唱會名稱</label>
+            <input type="text" id="c-name" placeholder="例如：Follow to Japan">
         </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="input-item">
+                <label>購票日期</label>
+                <input type="date" id="c-buy-date">
+            </div>
+            <div class="input-item">
+                <label>活動日期</label>
+                <input type="date" id="c-event-date">
+            </div>
+        </div>
+
+        <div class="input-item">
+            <label>座位資訊</label>
+            <input type="text" id="c-seat" placeholder="例如：搖滾A區 100號">
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="input-item">
+                <label>票價 ($)</label>
+                <input type="number" id="c-ticket" placeholder="0">
+            </div>
+            <div class="input-item">
+                <label>手續費 ($)</label>
+                <input type="number" id="c-fee" placeholder="0">
+            </div>
+        </div>
+
+        <button onclick="addC()" style="width:100%; padding:16px; background:var(--serenity); color:white; border-radius:15px; border:none; font-weight:bold; font-size:16px; margin-top:5px;">確認扣款</button>
     </div>
     <div id="c-list"></div>
 </div>
@@ -98,14 +124,7 @@
 </div>
 
 <script>
-    // 取得台灣時區的「今天日期」
-    function getToday() {
-        var d = new Date();
-        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-    }
-
-    var state = { total: 0, currentDate: getToday(), allLogs: {}, concertLogs: [] };
-    
+    var state = { total: 0, currentDate: new Date().toISOString().split('T')[0], allLogs: {}, concertLogs: [] };
     var prices = {
         wonwoo: { w_p: 50, w_m: 20, w_s: 30, w_l: 200, i_p: 50, i_s: 30, i_photo: 50, i_live: 200, extra: 10 },
         others: { w_p: 20, w_m: 10, w_s: 10, w_l: 50, i_p: 20, i_s: 10, i_live: 50, extra: 10 }
@@ -136,9 +155,8 @@
     function add(name, act, p) {
         var qty = parseInt(document.getElementById('customQty').value) || 1;
         var amt = p * qty;
-        var d = state.currentDate;
-        if(!state.allLogs[d]) state.allLogs[d] = [];
-        state.allLogs[d].push({ id: Date.now(), amt: amt, text: name + " " + act + (qty>1?" (x"+qty+")":"") });
+        if(!state.allLogs[state.currentDate]) state.allLogs[state.currentDate] = [];
+        state.allLogs[state.currentDate].push({ id: Date.now(), amt: amt, text: name + " " + act + (qty>1?" (x"+qty+")":"") });
         refresh();
     }
 
@@ -158,13 +176,13 @@
 
     function addC() {
         var name = document.getElementById('c-name').value;
-        var price = parseInt(document.getElementById('c-ticket').value) || 0;
-        var fee = parseInt(document.getElementById('c-fee').value) || 0;
+        var p = parseInt(document.getElementById('c-ticket').value) || 0;
+        var f = parseInt(document.getElementById('c-fee').value) || 0;
         if(!name) return;
         state.concertLogs.push({
             id: Date.now(), name: name, buyDate: document.getElementById('c-buy-date').value,
             eventDate: document.getElementById('c-event-date').value, seat: document.getElementById('c-seat').value,
-            price: price, fee: fee, totalCost: price + fee
+            price: p, fee: f, totalCost: p + f
         });
         ["c-name", "c-buy-date", "c-event-date", "c-seat", "c-ticket", "c-fee"].forEach(id => document.getElementById(id).value = "");
         refresh();
@@ -175,15 +193,16 @@
         var h = "";
         for(var i=state.concertLogs.length-1; i>=0; i--) {
             var c = state.concertLogs[i];
-            h += `<div class="card ticket"><span style="position:absolute;right:15px;top:15px;color:red;" onclick="delC(${c.id})">✖</span>
+            h += `<div class="card ticket"><span style="position:absolute;right:15px;top:15px;color:red;font-size:18px;" onclick="delC(${c.id})">✖</span>
                 <b style="color:#333;">✨ ${c.name}</b><br>
-                <small>📍 ${c.seat || '未填'} | 📅 ${c.eventDate || '未填'}</small><br>
+                <small>📍 ${c.seat || '未填'} | 🎫 ${c.buyDate || '未填'}</small><br>
+                <small>📅 活動日: ${c.eventDate || '未填'}</small><br>
                 <span class="ticket-price">-$${c.totalCost.toLocaleString()}</span></div>`;
         }
-        document.getElementById('c-list').innerHTML = h || '<div style="color:#ccc;text-align:center;padding:20px;">尚無紀錄</div>';
+        document.getElementById('c-list').innerHTML = h || '<div style="color:#ccc;text-align:center;padding:20px;">尚無演唱會紀錄</div>';
     }
 
-    function delC(id) { if(confirm("確定刪除？")) { state.concertLogs = state.concertLogs.filter(c => c.id !== id); refresh(); renderC(); } }
+    function delC(id) { if(confirm("確定刪除此演唱會紀錄？")) { state.concertLogs = state.concertLogs.filter(c => c.id !== id); refresh(); renderC(); } }
 
     function refresh() {
         var inc = 0, exp = 0, dayTotal = 0;
@@ -217,15 +236,8 @@
 
     window.onload = function() {
         var saved = localStorage.getItem('SVT_FINAL_STABLE_V1');
-        if(saved) {
-            var oldState = JSON.parse(saved);
-            state.total = oldState.total || 0;
-            state.allLogs = oldState.allLogs || {};
-            state.concertLogs = oldState.concertLogs || [];
-            // 【修復核心】讀取舊資料後，強制把游標指回「今天」！
-            state.currentDate = getToday(); 
-        }
-        
+        if(saved) state = JSON.parse(saved);
+        if(!state.concertLogs) state.concertLogs = [];
         var list = document.getElementById('m-list');
         members.forEach(function(m){
             var isV = (m.en === "Wonwoo"), p = isV ? prices.wonwoo : prices.others;
