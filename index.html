@@ -191,8 +191,15 @@
 
     function renderC() {
         var h = "";
-        for(var i=state.concertLogs.length-1; i>=0; i--) {
-            var c = state.concertLogs[i];
+        // 複製一份陣列並依活動日期 (eventDate) 由遠到近排序
+        var sortedLogs = [...state.concertLogs].sort(function(a, b) {
+            var dateA = a.eventDate ? new Date(a.eventDate).getTime() : 0;
+            var dateB = b.eventDate ? new Date(b.eventDate).getTime() : 0;
+            return dateB - dateA; 
+        });
+
+        for(var i=0; i<sortedLogs.length; i++) {
+            var c = sortedLogs[i];
             h += `<div class="card ticket"><span style="position:absolute;right:15px;top:15px;color:red;font-size:18px;" onclick="delC(${c.id})">✖</span>
                 <b style="color:#333;">✨ ${c.name}</b><br>
                 <small>📍 ${c.seat || '未填'} | 🎫 ${c.buyDate || '未填'}</small><br>
@@ -236,7 +243,12 @@
 
     window.onload = function() {
         var saved = localStorage.getItem('SVT_FINAL_STABLE_V1');
-        if(saved) state = JSON.parse(saved);
+        if(saved) {
+            state = JSON.parse(saved);
+        }
+        // 強制將當前日期設定為「今天」
+        state.currentDate = new Date().toISOString().split('T')[0];
+        
         if(!state.concertLogs) state.concertLogs = [];
         var list = document.getElementById('m-list');
         members.forEach(function(m){
