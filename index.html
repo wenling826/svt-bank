@@ -41,7 +41,12 @@
 
         .ticket { background: #fff; border-left: 8px solid var(--serenity); position: relative; overflow: hidden; }
         .ticket-price { color: #e84393; font-weight: bold; font-size: 18px; margin-top: 5px; display: block; }
-        .icon-btn { cursor: pointer; position: absolute; top: 15px; }
+        
+        /* 演唱會紀錄的新版圖示排版 */
+        .ticket-actions { position: absolute; right: 15px; top: 15px; display: flex; gap: 15px; align-items: center; }
+        .action-icon { cursor: pointer; font-size: 18px; transition: transform 0.2s; }
+        .action-icon:active { transform: scale(0.8); }
+        .ticket-title { color: #333; display: block; padding-right: 65px; word-break: break-word; } /* 避免文字擋到按鈕 */
 
         .logs { background: #fafafa; margin: 15px; padding: 15px; border-radius: 15px; border: 1px dashed #ddd; }
         .log-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
@@ -139,7 +144,7 @@
         {en:"Dino", ko:"찬"}
     ];
 
-    var editingConcertId = null; // 用來追蹤目前是否正在「修改」哪一筆紀錄
+    var editingConcertId = null;
 
     function tab(p) {
         if(p===1) {
@@ -178,7 +183,6 @@
         }
     }
 
-    // 整合新增與修改的儲存功能
     function saveC() {
         var name = document.getElementById('c-name').value;
         var p = parseInt(document.getElementById('c-ticket').value) || 0;
@@ -186,7 +190,6 @@
         if(!name) return;
 
         if (editingConcertId) {
-            // 如果是在修改模式，找出該筆紀錄並更新
             var idx = state.concertLogs.findIndex(x => x.id === editingConcertId);
             if (idx > -1) {
                 state.concertLogs[idx].name = name;
@@ -197,9 +200,8 @@
                 state.concertLogs[idx].fee = f;
                 state.concertLogs[idx].totalCost = p + f;
             }
-            cancelEditC(); // 儲存後退出修改模式
+            cancelEditC();
         } else {
-            // 一般新增模式
             state.concertLogs.push({
                 id: Date.now(), name: name, buyDate: document.getElementById('c-buy-date').value,
                 eventDate: document.getElementById('c-event-date').value, seat: document.getElementById('c-seat').value,
@@ -212,7 +214,6 @@
         renderC();
     }
 
-    // 點擊修改按鈕時，將資料填回表單
     function editC(id) {
         var c = state.concertLogs.find(x => x.id === id);
         if(!c) return;
@@ -226,19 +227,15 @@
         
         editingConcertId = id;
         
-        // 改變按鈕外觀提示目前是修改模式
         var submitBtn = document.getElementById('c-submit-btn');
         submitBtn.innerText = "儲存修改";
-        submitBtn.style.background = "#FBC02D"; // 變成黃色
+        submitBtn.style.background = "#FBC02D";
         submitBtn.style.color = "#827717";
         
         document.getElementById('c-cancel-btn').classList.remove('hidden');
-        
-        // 自動滑動到最上方讓使用者看到表單
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 取消修改模式，清空表單，按鈕變回原樣
     function cancelEditC() {
         editingConcertId = null;
         var submitBtn = document.getElementById('c-submit-btn');
@@ -250,14 +247,12 @@
         resetCForm();
     }
 
-    // 清空演唱會表單
     function resetCForm() {
         ["c-name", "c-buy-date", "c-event-date", "c-seat", "c-ticket", "c-fee"].forEach(id => document.getElementById(id).value = "");
     }
 
     function renderC() {
         var h = "";
-        // 複製一份陣列並依活動日期 (eventDate) 由遠到近排序
         var sortedLogs = [...state.concertLogs].sort(function(a, b) {
             var dateA = a.eventDate ? new Date(a.eventDate).getTime() : 0;
             var dateB = b.eventDate ? new Date(b.eventDate).getTime() : 0;
@@ -267,12 +262,13 @@
         for(var i=0; i<sortedLogs.length; i++) {
             var c = sortedLogs[i];
             h += `<div class="card ticket">
-                <!-- 新增編輯按鈕 ✏️ -->
-                <span class="icon-btn" style="right:45px; color:#aaa; font-size:16px;" onclick="editC(${c.id})">✏️</span>
-                <!-- 原本的刪除按鈕 ✖ -->
-                <span class="icon-btn" style="right:15px; color:#ff4d4d; font-size:18px;" onclick="delC(${c.id})">✖</span>
+                <!-- 新的 Flexbox 圖示群組 -->
+                <div class="ticket-actions">
+                    <span class="action-icon" style="opacity:0.7;" onclick="editC(${c.id})">✏️</span>
+                    <span class="action-icon" style="color:#ff4d4d; font-weight:bold; font-size:20px;" onclick="delC(${c.id})">✖</span>
+                </div>
                 
-                <b style="color:#333;">✨ ${c.name}</b><br>
+                <b class="ticket-title">✨ ${c.name}</b>
                 <small>📍 ${c.seat || '未填'} | 🎫 ${c.buyDate || '未填'}</small><br>
                 <small>📅 活動日: ${c.eventDate || '未填'}</small><br>
                 <span class="ticket-price">-$${c.totalCost.toLocaleString()}</span></div>`;
@@ -283,7 +279,6 @@
     function delC(id) { 
         if(confirm("確定刪除此演唱會紀錄？")) { 
             state.concertLogs = state.concertLogs.filter(c => c.id !== id); 
-            // 如果剛好正在修改這筆被刪除的資料，就取消修改模式
             if(editingConcertId === id) cancelEditC(); 
             refresh(); 
             renderC(); 
@@ -325,7 +320,6 @@
         if(saved) {
             state = JSON.parse(saved);
         }
-        // 強制將當前日期設定為「今天」
         state.currentDate = new Date().toISOString().split('T')[0];
         
         if(!state.concertLogs) state.concertLogs = [];
